@@ -10,6 +10,8 @@
    (:file "math-experiment-protocol")
    (:file "math-falsification")
    (:file "math-theorem-match")
+   (:file "math-analytic-side-condition")
+   (:file "math-saddle-analysis")
    (:file "projection")
    (:file "formal-native")
    (:file "research-wire")
