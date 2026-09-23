@@ -1,0 +1,11 @@
+{
+  "version": "PERFECT_MEETING_UNIFORM_3_1_CROSS_POLYGON_EXISTS_STATEMENT_V1",
+  "theorem_id": "perfect_meeting.uniform_3_1.cross_polygon.exists",
+  "family_id": "uniform_3_1",
+  "pair_universe_id": "cross_polygon_pairs",
+  "move_alphabet_id": "single_move",
+  "initial_state_id": "uniform_3_1_zero",
+  "statement": "There exists a horizon T such that every cross-polygon pair in uniform_3_1 is hit exactly once under the frozen meeting law.",
+  "witness_horizon": 8,
+  "status": "proved_by_bounded_witness"
+}

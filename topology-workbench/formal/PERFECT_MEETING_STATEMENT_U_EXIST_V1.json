@@ -1,0 +1,6 @@
+{
+  "version": "PERFECT_MEETING_STATEMENT_U_EXIST_V1",
+  "target_id": "T_PM_U_EXIST",
+  "status": "target",
+  "statement": "There exists a perfect exact-once pair schedule for the frozen uniform family under the chosen move alphabet and meeting realization law."
+}

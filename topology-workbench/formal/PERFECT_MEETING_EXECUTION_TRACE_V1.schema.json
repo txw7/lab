@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PERFECT_MEETING_EXECUTION_TRACE_V1",
+  "type": "object",
+  "required": ["version", "traces"],
+  "properties": {
+    "version": { "type": "string" },
+    "traces": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "version",
+          "instance_id_ascii",
+          "pair_universe_kind_ascii",
+          "move_alphabet_ascii",
+          "initial_state_id_ascii",
+          "schedule_id",
+          "initial_state_digest_32b",
+          "horizon_u32",
+          "steps",
+          "final_hit_count_map_digest_32b",
+          "exact_once_flag_bool"
+        ],
+        "properties": {
+          "version": { "type": "string" },
+          "instance_id_ascii": { "type": "string" },
+          "pair_universe_kind_ascii": { "type": "string" },
+          "move_alphabet_ascii": { "type": "string" },
+          "initial_state_id_ascii": { "type": "string" },
+          "schedule_id": { "type": "string" },
+          "initial_state_digest_32b": { "type": "string" },
+          "horizon_u32": { "type": "integer" },
+          "steps": { "type": "array" },
+          "final_hit_count_map_digest_32b": { "type": "string" },
+          "exact_once_flag_bool": { "type": "boolean" }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PERFECT_MEETING_SEARCH_TRACE_V1",
+  "type": "object",
+  "required": ["version", "traces"],
+  "properties": {
+    "version": { "type": "string" },
+    "traces": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "version",
+          "instance_id_ascii",
+          "pair_universe_kind_ascii",
+          "move_alphabet_ascii",
+          "enumeration_order_ascii",
+          "search_mode_ascii",
+          "prune_rule_ascii",
+          "horizon_u32",
+          "terminal_checked_count_u64",
+          "terminal_exact_once_count_u64",
+          "terminal_with_duplicates_count_u64",
+          "nodes"
+        ],
+        "properties": {
+          "version": { "type": "string" },
+          "instance_id_ascii": { "type": "string" },
+          "pair_universe_kind_ascii": { "type": "string" },
+          "move_alphabet_ascii": { "type": "string" },
+          "enumeration_order_ascii": { "type": "string" },
+          "search_mode_ascii": { "type": "string" },
+          "prune_rule_ascii": { "type": "string" },
+          "horizon_u32": { "type": "integer" },
+          "terminal_checked_count_u64": { "type": "integer" },
+          "terminal_exact_once_count_u64": { "type": "integer" },
+          "terminal_with_duplicates_count_u64": { "type": "integer" },
+          "nodes": { "type": "array" }
+        }
+      }
+    }
+  }
+}

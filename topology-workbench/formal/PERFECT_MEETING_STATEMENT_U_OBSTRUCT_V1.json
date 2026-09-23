@@ -1,0 +1,6 @@
+{
+  "version": "PERFECT_MEETING_STATEMENT_U_OBSTRUCT_V1",
+  "target_id": "T_PM_U_OBSTRUCT",
+  "status": "target",
+  "statement": "No perfect exact-once pair schedule exists for the frozen uniform family under the stated obstruction predicates."
+}

@@ -1,0 +1,71 @@
+{
+  "version": "PERFECT_MEETING_CONJECTURE_STATUS_V1",
+  "targets": [
+    {
+      "id": "T_PM_U_EXIST",
+      "status": "open_with_success_witness",
+      "family_id_ascii": null,
+      "pair_universe_id_ascii": null,
+      "evidence_artifacts": [
+        "workbench/generated/PERFECT_MEETING_SEARCH_REPORT_V1.json"
+      ],
+      "witness_schedule_digest": null,
+      "obstruction_witness_digest": null,
+      "supporting_execution_trace_digest": null,
+      "supporting_search_trace_digest": null
+    },
+    {
+      "id": "T_PM_U_OBSTRUCT",
+      "status": "open_with_failure_witness",
+      "family_id_ascii": null,
+      "pair_universe_id_ascii": null,
+      "evidence_artifacts": [
+        "workbench/generated/PERFECT_MEETING_COUNTEREXAMPLES_V1.json"
+      ],
+      "witness_schedule_digest": null,
+      "obstruction_witness_digest": null,
+      "supporting_execution_trace_digest": null,
+      "supporting_search_trace_digest": null
+    },
+    {
+      "id": "T_PM_M_CLASSIFY",
+      "status": "open",
+      "family_id_ascii": null,
+      "pair_universe_id_ascii": null,
+      "evidence_artifacts": [],
+      "witness_schedule_digest": null,
+      "obstruction_witness_digest": null,
+      "supporting_execution_trace_digest": null,
+      "supporting_search_trace_digest": null
+    },
+    {
+      "id": "perfect_meeting.uniform_3_1.cross_polygon.exists",
+      "status": "proved_by_bounded_witness",
+      "family_id_ascii": "uniform_3_1",
+      "pair_universe_id_ascii": "cross_polygon_pairs",
+      "evidence_artifacts": [
+        "workbench/formal/PERFECT_MEETING_UNIFORM_3_1_CROSS_POLYGON_EXISTS_STATEMENT_V1.json",
+        "workbench/generated/PERFECT_MEETING_SEARCH_REPORT_V1.json",
+        "workbench/generated/PERFECT_MEETING_EXECUTION_TRACE_V1.json"
+      ],
+      "witness_schedule_digest": "38d5b4937a6746a1d1e488847ce3cc1597739a7dd2e1dae987c3478a072bc7d3",
+      "obstruction_witness_digest": null,
+      "supporting_execution_trace_digest": "7f65a25b6b0a73d55015f411f6081214000245c170a2965fee4d4fe2438b75b2",
+      "supporting_search_trace_digest": null
+    },
+    {
+      "id": "perfect_meeting.uniform_3_1.all_pairs.obstructed",
+      "status": "proved_by_precheck_obstruction",
+      "family_id_ascii": "uniform_3_1",
+      "pair_universe_id_ascii": "all_pairs",
+      "evidence_artifacts": [
+        "workbench/formal/PERFECT_MEETING_UNIFORM_3_1_ALL_PAIRS_OBSTRUCTED_STATEMENT_V1.json",
+        "workbench/generated/PERFECT_MEETING_COUNTEREXAMPLES_V1.json"
+      ],
+      "witness_schedule_digest": null,
+      "obstruction_witness_digest": "18667c23f41121180cc77cc99e5c03a95c1389b48379a6a9f1064c1fa45995f3",
+      "supporting_execution_trace_digest": null,
+      "supporting_search_trace_digest": null
+    }
+  ]
+}

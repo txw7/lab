@@ -1,0 +1,11 @@
+{
+  "version": "PERFECT_MEETING_UNIFORM_3_1_ALL_PAIRS_OBSTRUCTED_STATEMENT_V1",
+  "theorem_id": "perfect_meeting.uniform_3_1.all_pairs.obstructed",
+  "family_id": "uniform_3_1",
+  "pair_universe_id": "all_pairs",
+  "move_alphabet_id": "single_move",
+  "initial_state_id": "uniform_3_1_zero",
+  "statement": "No exact-once schedule exists for the all-pairs universe in uniform_3_1 under the frozen meeting law because same-polygon pairs are unrealizable.",
+  "obstruction_kind": "same_polygon_precheck",
+  "status": "proved_by_precheck_obstruction"
+}

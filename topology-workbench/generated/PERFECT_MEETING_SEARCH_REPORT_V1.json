@@ -1,0 +1,177 @@
+{
+  "version": "PERFECT_MEETING_SEARCH_RESULT_V1",
+  "horizon_policy_ascii": "all_pairs:fixed_Bmax_4;cross_polygon_pairs:fixed_Bmax_8",
+  "runs": [
+    {
+      "family_id": {
+        "Uniform": {
+          "n": 3,
+          "k": 1
+        }
+      },
+      "family_id_ascii": "uniform_3_1",
+      "move_alphabet": "SingleMove",
+      "move_alphabet_ascii": "single_move",
+      "pair_universe_id_ascii": "all_pairs",
+      "initial_state_id": "uniform_3_1_zero",
+      "initial_state_id_ascii": "uniform_3_1_zero",
+      "schedule_horizon": 4,
+      "horizon_u32": 4,
+      "pair_count": 15,
+      "met_pair_count": 0,
+      "duplicate_pair_count": 0,
+      "missing_pair_count": 15,
+      "searched_schedule_count_u64": 0,
+      "terminated_reason_ascii": "exhausted_precheck_same_polygon_obstruction",
+      "schedule_id": null,
+      "execution_trace_digest": null,
+      "search_trace_digest": null,
+      "outcome": "Failure",
+      "witness": {
+        "schedule": [],
+        "missing_pairs": [
+          {
+            "pair": [
+              0,
+              1
+            ],
+            "missing_by_horizon": 4
+          }
+        ],
+        "duplicate_pairs": [],
+        "obstruction_witness": "count_obstruction.same_polygon_pair_unrealizable: pair [0, 1] lies in one polygon; default all_pairs universe includes intra-polygon pairs while the frozen meeting law realizes only cross-polygon alignments; per_state_pairs=3, horizon_policy=fixed_Bmax_4"
+      }
+    },
+    {
+      "family_id": {
+        "Uniform": {
+          "n": 3,
+          "k": 1
+        }
+      },
+      "family_id_ascii": "uniform_3_1",
+      "move_alphabet": "SingleMove",
+      "move_alphabet_ascii": "single_move",
+      "pair_universe_id_ascii": "cross_polygon_pairs",
+      "initial_state_id": "uniform_3_1_zero",
+      "initial_state_id_ascii": "uniform_3_1_zero",
+      "schedule_horizon": 8,
+      "horizon_u32": 8,
+      "pair_count": 9,
+      "met_pair_count": 9,
+      "duplicate_pair_count": 0,
+      "missing_pair_count": 0,
+      "searched_schedule_count_u64": 2081,
+      "terminated_reason_ascii": "found_success",
+      "schedule_id": "84eb35275c87927da1186421f4a3c80c0cde64aa657a1c4465a8e424f223754a",
+      "execution_trace_digest": "7f65a25b6b0a73d55015f411f6081214000245c170a2965fee4d4fe2438b75b2",
+      "search_trace_digest": null,
+      "outcome": "Success",
+      "witness": {
+        "schedule": [
+          "+e0",
+          "+e0",
+          "+e1",
+          "+e0",
+          "+e0",
+          "+e1",
+          "+e0",
+          "+e0"
+        ],
+        "missing_pairs": [],
+        "duplicate_pairs": [],
+        "obstruction_witness": "sanity_stage_nondegenerate: reachable_pair_union_size=9 over fixed_Bmax_8"
+      }
+    },
+    {
+      "family_id": {
+        "Uniform": {
+          "n": 3,
+          "k": 2
+        }
+      },
+      "family_id_ascii": "uniform_3_2",
+      "move_alphabet": "SingleMove",
+      "move_alphabet_ascii": "single_move",
+      "pair_universe_id_ascii": "all_pairs",
+      "initial_state_id": "uniform_3_2_zero",
+      "initial_state_id_ascii": "uniform_3_2_zero",
+      "schedule_horizon": 4,
+      "horizon_u32": 4,
+      "pair_count": 36,
+      "met_pair_count": 0,
+      "duplicate_pair_count": 0,
+      "missing_pair_count": 36,
+      "searched_schedule_count_u64": 0,
+      "terminated_reason_ascii": "exhausted_precheck_same_polygon_obstruction",
+      "schedule_id": null,
+      "execution_trace_digest": null,
+      "search_trace_digest": null,
+      "outcome": "Failure",
+      "witness": {
+        "schedule": [],
+        "missing_pairs": [
+          {
+            "pair": [
+              0,
+              1
+            ],
+            "missing_by_horizon": 4
+          }
+        ],
+        "duplicate_pairs": [],
+        "obstruction_witness": "count_obstruction.same_polygon_pair_unrealizable: pair [0, 1] lies in one polygon; default all_pairs universe includes intra-polygon pairs while the frozen meeting law realizes only cross-polygon alignments; per_state_pairs=9, horizon_policy=fixed_Bmax_4"
+      }
+    },
+    {
+      "family_id": {
+        "Uniform": {
+          "n": 3,
+          "k": 2
+        }
+      },
+      "family_id_ascii": "uniform_3_2",
+      "move_alphabet": "SingleMove",
+      "move_alphabet_ascii": "single_move",
+      "pair_universe_id_ascii": "cross_polygon_pairs",
+      "initial_state_id": "uniform_3_2_zero",
+      "initial_state_id_ascii": "uniform_3_2_zero",
+      "schedule_horizon": 8,
+      "horizon_u32": 8,
+      "pair_count": 27,
+      "met_pair_count": 3,
+      "duplicate_pair_count": 1,
+      "missing_pair_count": 24,
+      "searched_schedule_count_u64": 0,
+      "terminated_reason_ascii": "analytic_obstruction_single_move_preserves_one_cross_pair_each_step",
+      "schedule_id": "c8e71957645a4073563db18cc93d4278537d7679fba4ba212d7495f133c9f470",
+      "execution_trace_digest": null,
+      "search_trace_digest": "b51a05ae92c213747403ab1bfcaf4f3c72be345a5faa2a4fbb58eb8e84586633",
+      "outcome": "Failure",
+      "witness": {
+        "schedule": [
+          "+e0"
+        ],
+        "missing_pairs": [
+          {
+            "pair": [
+              0,
+              3
+            ],
+            "missing_by_horizon": 8
+          }
+        ],
+        "duplicate_pairs": [
+          {
+            "pair": [
+              3,
+              6
+            ],
+            "first_duplicate_time": 1
+          }
+        ],
+        "obstruction_witness": "analytic_obstruction: with cross-polygon realization on uniform_3_2, each single-move step changes only one coordinate, leaving one pair type unchanged from the previous state; therefore a duplicate pair appears at t=1 for any first move, so exact-once is impossible."
+      }
+    }
+  ]
+}

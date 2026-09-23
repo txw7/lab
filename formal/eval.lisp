@@ -1,0 +1,105 @@
+(in-package :mini-kernel)
+
+(defun eval-smt-term (term)
+  (labels
+      ((eval* (current)
+         (case (smt-tag current)
+           (:bool (second current))
+           (:int-lit current)
+           (:bv-lit current)
+           (:var (kernel-error "cannot evaluate open SMT term: ~S" current))
+           (:not (not (eval* (second current))))
+           (:and (every #'identity (mapcar #'eval* (rest current))))
+           (:or (some #'identity (mapcar #'eval* (rest current))))
+           (:xor (not (eq (eval* (second current))
+                          (eval* (third current)))))
+           (:=> (or (not (eval* (second current)))
+                    (eval* (third current))))
+           (:ite (if (eval* (second current))
+                     (eval* (third current))
+                     (eval* (fourth current))))
+           (:= (let ((lhs (eval* (second current)))
+                     (rhs (eval* (third current))))
+                 (equal lhs rhs)))
+           (:bvnot
+            (let* ((inner (eval* (second current)))
+                   (width (smt-bv-width inner))
+                   (mask (1- (ash 1 width))))
+              (smt-bv-lit width (logxor (smt-bv-value inner) mask))))
+           (:bvand
+            (let* ((lhs (eval* (second current)))
+                   (rhs (eval* (third current)))
+                   (width (%ensure-same-bv-width lhs rhs :bvand)))
+              (smt-bv-lit width (logand (smt-bv-value lhs) (smt-bv-value rhs)))))
+           (:bvor
+            (let* ((lhs (eval* (second current)))
+                   (rhs (eval* (third current)))
+                   (width (%ensure-same-bv-width lhs rhs :bvor)))
+              (smt-bv-lit width (logior (smt-bv-value lhs) (smt-bv-value rhs)))))
+           (:bvxor
+            (let* ((lhs (eval* (second current)))
+                   (rhs (eval* (third current)))
+                   (width (%ensure-same-bv-width lhs rhs :bvxor)))
+              (smt-bv-lit width (logxor (smt-bv-value lhs) (smt-bv-value rhs)))))
+           (:bvadd
+            (let* ((lhs (eval* (second current)))
+                   (rhs (eval* (third current)))
+                   (width (%ensure-same-bv-width lhs rhs :bvadd))
+                   (modulus (ash 1 width)))
+              (smt-bv-lit width (mod (+ (smt-bv-value lhs) (smt-bv-value rhs)) modulus))))
+           (:bvsub
+            (let* ((lhs (eval* (second current)))
+                   (rhs (eval* (third current)))
+                   (width (%ensure-same-bv-width lhs rhs :bvsub))
+                   (modulus (ash 1 width)))
+              (smt-bv-lit width (mod (- (smt-bv-value lhs) (smt-bv-value rhs)) modulus))))
+           (:int-add
+            (smt-int-lit (reduce #'+ (mapcar (lambda (term) (smt-int-value (eval* term)))
+                                             (rest current))
+                                 :initial-value 0)))
+           (:int-sub
+            (let ((lhs (eval* (second current)))
+                  (rhs (eval* (third current))))
+              (smt-int-lit (- (smt-int-value lhs) (smt-int-value rhs)))))
+           (:int-mod
+            (let ((lhs (eval* (second current)))
+                  (rhs (eval* (third current))))
+              (smt-int-lit (mod (smt-int-value lhs) (smt-int-value rhs)))))
+           (:int-lt
+            (let ((lhs (eval* (second current)))
+                  (rhs (eval* (third current))))
+              (< (smt-int-value lhs) (smt-int-value rhs))))
+           (:int-le
+            (let ((lhs (eval* (second current)))
+                  (rhs (eval* (third current))))
+              (<= (smt-int-value lhs) (smt-int-value rhs))))
+           (:int-gt
+            (let ((lhs (eval* (second current)))
+                  (rhs (eval* (third current))))
+              (> (smt-int-value lhs) (smt-int-value rhs))))
+           (:int-ge
+            (let ((lhs (eval* (second current)))
+                  (rhs (eval* (third current))))
+              (>= (smt-int-value lhs) (smt-int-value rhs))))
+           (:concat
+            (let* ((lhs (eval* (second current)))
+                   (rhs (eval* (third current)))
+                   (lw (smt-bv-width lhs))
+                   (rw (smt-bv-width rhs)))
+              (smt-bv-lit (+ lw rw)
+                          (logior (ash (smt-bv-value lhs) rw)
+                                  (smt-bv-value rhs)))))
+           (:extract
+            (destructuring-bind (_ hi lo inner) current
+              (declare (ignore _))
+              (let* ((value (eval* inner))
+                     (width (1+ (- hi lo))))
+                (smt-bv-lit width (ldb (byte width lo) (smt-bv-value value))))))
+           (:ult
+            (let ((lhs (eval* (second current)))
+                  (rhs (eval* (third current))))
+              (%ensure-same-bv-width lhs rhs :ult)
+              (< (smt-bv-value lhs) (smt-bv-value rhs))))
+           (otherwise
+            (kernel-error "cannot evaluate unsupported SMT term: ~S" current)))))
+    (eval* term)))

@@ -1,0 +1,6 @@
+{
+  "version": "PERFECT_MEETING_STATEMENT_M_CLASSIFY_V1",
+  "target_id": "T_PM_M_CLASSIFY",
+  "status": "target",
+  "statement": "Classify necessary conditions, sufficient conditions, and minimal counterexample families for perfect exact-once pair schedules in the mixed-size family."
+}

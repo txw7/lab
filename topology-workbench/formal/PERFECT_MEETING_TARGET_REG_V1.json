@@ -1,0 +1,36 @@
+{
+  "version": "PERFECT_MEETING_TARGET_REG_V1",
+  "families": [
+    {
+      "id": "perfect_meeting_all_pairs_family",
+      "pair_universe_id_ascii": "all_pairs",
+      "description": "Perfect exact-once meeting schedules over the full unordered pair universe, including intra-polygon pairs."
+    },
+    {
+      "id": "perfect_meeting_cross_polygon_family",
+      "pair_universe_id_ascii": "cross_polygon_pairs",
+      "description": "Perfect exact-once meeting schedules over cross-polygon unordered pairs only."
+    }
+  ],
+  "targets": [
+    { "id": "T_PM_U_EXIST", "kind": "existence", "scope": "uniform", "owner": "Lean+Rust" },
+    { "id": "T_PM_U_OBSTRUCT", "kind": "obstruction", "scope": "uniform", "owner": "Lean+Rust" },
+    { "id": "T_PM_M_CLASSIFY", "kind": "classification", "scope": "mixed", "owner": "Lean+Rust" },
+    {
+      "id": "perfect_meeting.uniform_3_1.cross_polygon.exists",
+      "kind": "existence",
+      "scope": "instance",
+      "owner": "Lean+Rust",
+      "family_id": "perfect_meeting_cross_polygon_family",
+      "pair_universe_id_ascii": "cross_polygon_pairs"
+    },
+    {
+      "id": "perfect_meeting.uniform_3_1.all_pairs.obstructed",
+      "kind": "obstruction",
+      "scope": "instance",
+      "owner": "Lean+Rust",
+      "family_id": "perfect_meeting_all_pairs_family",
+      "pair_universe_id_ascii": "all_pairs"
+    }
+  ]
+}
