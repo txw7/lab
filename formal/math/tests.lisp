@@ -114,4 +114,110 @@
     (%test-assert (find-math-provider :lean-provider) "Lean provider declaration missing")
     (%test-assert (null (math-provider-executor (find-math-provider :lean-provider)))
                   "Declared provider should remain capability-missing until bound")
+
+    (let* ((x (make-math-expression-v1 :variable :name "x"))
+           (three (make-math-expression-v1 :constant :value 3))
+           (zero (make-math-expression-v1 :constant :value 0))
+           (stronger (make-math-expression-v1 :gt x three))
+           (weaker (make-math-expression-v1 :gt x zero))
+           (subsumption (math-subsumption-v1 stronger weaker))
+           (match
+             (match-math-theorem-v1
+              :theorem-ref "theorem:positive"
+              :theorem-conclusion stronger
+              :target-ref "claim:positive"
+              :target-expression weaker
+              :required-hypotheses (list weaker)
+              :available-hypotheses (list stronger))))
+      (%test-assert (eq :subsumes
+                        (math-subsumption-result-v1-status subsumption))
+                    "Exact bound subsumption failed")
+      (%test-assert (eq :none
+                        (math-subsumption-result-v1-proof-effect subsumption))
+                    "Subsumption acquired proof authority")
+      (%test-assert (eq :matched
+                        (math-theorem-match-v1-conclusion-status match))
+                    "Theorem conclusion match failed")
+      (%test-assert
+       (eq :already-discharged
+           (getf (first (math-theorem-match-v1-hypothesis-statuses match))
+                 :status))
+       "Theorem hypothesis subsumption failed"))
+
+    (let* ((relation
+             (make-math-asymptotic-relation-v1
+              :kind :uniform-big-o
+              :lhs "error(T,r)"
+              :rhs "main(T,r)"
+              :limit-variable "T"
+              :limit-direction :infinity
+              :parameter-domain "r>0"
+              :uniformity-variables '("r")
+              :constant-dependencies '("epsilon")))
+           (balance
+             (make-dominant-balance-v1
+              :source-expression-ref "expr:gaussian-tail"
+              :candidate-scale "1/(16 log log T)"
+              :relation :asymptotic-equivalent
+              :assumptions '("T sufficiently large")))
+           (experiment
+             (complete-math-experiment-v1
+              (make-math-experiment-v1
+               :class :extremizer-search
+               :hypothesis "contact rigidity"
+               :expected-result "one-cluster extremizer"
+               :configuration '(:samples 64))
+              '(:extremizer :two-cluster)
+              :counterexample-candidate)))
+      (%test-assert (eq :none
+                        (math-asymptotic-relation-v1-proof-effect relation))
+                    "Asymptotic relation acquired proof authority")
+      (%test-assert (eq :candidate (dominant-balance-v1-status balance))
+                    "Dominant balance status mismatch")
+      (%test-assert (eq :none (math-experiment-v1-proof-effect experiment))
+                    "Experiment acquired proof authority"))
+
+    (flet ((no-counterexample-provider (claim context provider)
+             (declare (ignore context))
+             (make-math-falsification-result-v1
+              :claim-ref (math-object-id claim)
+              :provider-ref
+              (math-falsification-provider-v1-provider-ref provider)
+              :status :no-counterexample-found
+              :tested-domain '(:small-exact 0 4)))
+           (counterexample-provider (claim context provider)
+             (declare (ignore context))
+             (make-math-falsification-result-v1
+              :claim-ref (math-object-id claim)
+              :provider-ref
+              (math-falsification-provider-v1-provider-ref provider)
+              :status :counterexample
+              :witness '(:x 2 :failure "two-cluster"))))
+      (register-math-falsification-provider-v1
+       (make-math-falsification-provider-v1
+        :provider-ref :small-exact
+        :supported-classes '(:math-claim)
+        :executor #'no-counterexample-provider
+        :cost-class :cheap))
+      (register-math-falsification-provider-v1
+       (make-math-falsification-provider-v1
+        :provider-ref :synthetic-adversarial
+        :supported-classes '(:math-claim)
+        :executor #'counterexample-provider
+        :cost-class :cheap))
+      (multiple-value-bind (result trace)
+          (run-math-falsification-pipeline-v1
+           (make-math-claim-v1
+            :id "claim:false-rigidity"
+            :statement "all contact phases form one cluster")
+           '(:small-exact :synthetic-adversarial))
+        (%test-assert (= 2 (length trace))
+                      "Falsification pipeline did not retain provider trace")
+        (%test-assert
+         (eq :counterexample
+             (math-falsification-result-v1-status result))
+         "Falsification pipeline missed counterexample")
+        (%test-assert (eq :none
+                          (math-falsification-result-v1-proof-effect result))
+                      "Counterexample pipeline acquired theorem authority")))
     t))
