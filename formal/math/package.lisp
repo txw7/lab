@@ -209,4 +209,42 @@
    #:math-object->research-record
    #:math-claim->lsip-search-wire-v1
    #:math-proof-problem->lsip-search-wire-v1
+   #:math-subsumption-result-v1
+   #:math-subsumption-result-v1-status
+   #:math-subsumption-result-v1-proof-effect
+   #:math-subsumption-v1
+   #:math-theorem-match-v1
+   #:math-theorem-match-v1-conclusion-status
+   #:math-theorem-match-v1-hypothesis-statuses
+   #:match-math-theorem-v1
+   #:math-asymptotic-relation-v1
+   #:math-asymptotic-relation-v1-proof-effect
+   #:make-math-asymptotic-relation-v1
+   #:dominant-balance-v1
+   #:dominant-balance-v1-status
+   #:make-dominant-balance-v1
+   #:math-experiment-v1
+   #:math-experiment-v1-proof-effect
+   #:make-math-experiment-v1
+   #:complete-math-experiment-v1
+   #:math-falsification-result-v1
+   #:math-falsification-result-v1-status
+   #:math-falsification-result-v1-witness
+   #:math-falsification-result-v1-proof-effect
+   #:make-math-falsification-result-v1
+   #:math-falsification-provider-v1
+   #:math-falsification-provider-v1-provider-ref
+   #:make-math-falsification-provider-v1
+   #:register-math-falsification-provider-v1
+   #:run-math-falsification-pipeline-v1
+   #:finite-integer-falsification-executor-v1
+   #:make-finite-integer-falsification-provider-v1
+   #:analytic-side-condition-v1
+   #:analytic-side-condition-v1-kind
+   #:analytic-side-condition-v1-proof-effect
+   #:analytic-side-conditions-for-transformation-v1
+   #:saddle-analysis-v1
+   #:saddle-analysis-v1-status
+   #:saddle-analysis-v1-proof-effect
+   #:make-saddle-analysis-v1
    #:run-formal-math-tests))
