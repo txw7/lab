@@ -293,4 +293,30 @@
              (math-falsification-result-v1-proof-effect result))
          "Finite falsification acquired theorem authority")))
 
+
+    (let* ((y (make-math-expression-v1 :variable :name "y"))
+           (x (make-math-expression-v1 :variable :name "x"))
+           (zero (make-math-expression-v1 :constant :value 0))
+           (one (make-math-expression-v1 :constant :value 1))
+           (theorem-conclusion (make-math-expression-v1 :gt y zero))
+           (target (make-math-expression-v1 :gt x zero))
+           (required (make-math-expression-v1 :ge y one))
+           (match
+             (match-math-theorem-v1
+              :theorem-ref "theorem:different-notation"
+              :theorem-conclusion theorem-conclusion
+              :target-ref "claim:x-positive"
+              :target-expression target
+              :required-hypotheses (list required)
+              :available-hypotheses '()
+              :notation-map '(("y" . "x")))))
+      (%test-assert (eq :matched
+                        (math-theorem-match-v1-conclusion-status match))
+                    "Notation-aware theorem conclusion matching failed")
+      (%test-assert
+       (eq :new-subgoal
+           (getf (first (math-theorem-match-v1-hypothesis-statuses match))
+                 :status))
+       "Notation-aware theorem matching did not expose missing hypothesis"))
+
     t))
