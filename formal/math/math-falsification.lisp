@@ -76,3 +76,66 @@
    register-math-falsification-provider-v1
    run-math-falsification-pipeline-v1)
  :lab.math)
+
+
+(defun finite-integer-falsification-executor-v1 (claim context provider)
+  (let ((variable (getf context :variable))
+        (domain (getf context :domain))
+        (predicate (getf context :predicate))
+        (feature-function (getf context :feature-function)))
+    (unless (symbolp variable)
+      (error "Finite integer falsification requires symbolic :variable"))
+    (unless (and (listp domain)
+                 (every #'integerp domain))
+      (error "Finite integer falsification requires an explicit integer :domain"))
+    (unless (functionp predicate)
+      (error "Finite integer falsification requires a predicate function"))
+    (dolist (value domain)
+      (unless (funcall predicate value)
+        (return-from finite-integer-falsification-executor-v1
+          (make-math-falsification-result-v1
+           :claim-ref (math-object-id claim)
+           :provider-ref
+           (math-falsification-provider-v1-provider-ref provider)
+           :status :counterexample
+           :witness
+           (list
+            :assignment (list variable value)
+            :features
+            (and feature-function
+                 (funcall feature-function value)))
+           :tested-domain
+           (list :kind :finite-integer-domain
+                 :variable variable
+                 :values (copy-list domain))
+           :provenance
+           (list :source :finite-integer-falsification-v1)
+           :metadata
+           (list :tested-count
+                 (1+ (position value domain :test #'eql)))))))
+    (make-math-falsification-result-v1
+     :claim-ref (math-object-id claim)
+     :provider-ref
+     (math-falsification-provider-v1-provider-ref provider)
+     :status :no-counterexample-found
+     :tested-domain
+     (list :kind :finite-integer-domain
+           :variable variable
+           :values (copy-list domain))
+     :provenance
+     (list :source :finite-integer-falsification-v1)
+     :metadata
+     (list :tested-count (length domain)))))
+
+(defun make-finite-integer-falsification-provider-v1
+    (&key (provider-ref :finite-integer-search) metadata)
+  (make-math-falsification-provider-v1
+   :provider-ref provider-ref
+   :supported-classes '(:math-claim)
+   :executor #'finite-integer-falsification-executor-v1
+   :cost-class :cheap
+   :metadata
+   (append
+    (list :search-domain :explicit-finite-integers
+          :truth-authority :none)
+    (copy-tree metadata))))
