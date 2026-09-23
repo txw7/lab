@@ -254,4 +254,43 @@
                     "Saddle analysis status mismatch")
       (%test-assert (eq :none (saddle-analysis-v1-proof-effect saddle))
                     "Saddle analysis acquired proof authority"))
+
+    (let* ((provider
+             (make-finite-integer-falsification-provider-v1
+              :provider-ref :finite-integer-benchmark))
+           (claim
+             (make-math-claim-v1
+              :id "claim:positive-finite"
+              :statement "x is positive on the benchmark domain")))
+      (register-math-falsification-provider-v1 provider)
+      (multiple-value-bind (result trace)
+          (run-math-falsification-pipeline-v1
+           claim
+           '(:finite-integer-benchmark)
+           :context
+           (list
+            :variable 'x
+            :domain '(0 1 2 3)
+            :predicate (lambda (x) (> x 0))
+            :feature-function
+            (lambda (x)
+              (list :positive-p (> x 0)
+                    :zero-p (zerop x)))))
+        (%test-assert (= 1 (length trace))
+                      "Finite falsification trace length mismatch")
+        (%test-assert
+         (eq :counterexample
+             (math-falsification-result-v1-status result))
+         "Finite falsification failed to discover x=0")
+        (%test-assert
+         (equal '(x 0)
+                (getf
+                 (math-falsification-result-v1-witness result)
+                 :assignment))
+         "Finite falsification witness mismatch")
+        (%test-assert
+         (eq :none
+             (math-falsification-result-v1-proof-effect result))
+         "Finite falsification acquired theorem authority")))
+
     t))
