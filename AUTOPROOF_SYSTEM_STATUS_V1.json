@@ -1,0 +1,25 @@
+{
+  "schema": "AUTOPROOF_SYSTEM_STATUS_V1",
+  "scope": "txw7/lab integration tranche",
+  "research_graph_ready_u8": 0,
+  "lsip_search_ready_u8": 0,
+  "lsip_proof_gate_ready_u8": 0,
+  "formal_kernel_ready_u8": 1,
+  "formal_backend_protocol_ready_u8": 1,
+  "cegis_ready_u8": 1,
+  "theorem_workbench_ready_u8": 0,
+  "math_ir_ready_u8": 0,
+  "research_bridge_ready_u8": 0,
+  "factory_orchestration_ready_u8": 0,
+  "canon_admission_ready_u8": 0,
+  "rh_workbench_ready_u8": 0,
+  "recursive_loop_ready_u8": 0,
+  "trusted_kernel_metatheory_closed_u8": 0,
+  "blocking_reasons": [
+    "new Lab theorem-workbench, math IR, and RH adapter are source-integrated but await the repository local gate",
+    "cross-repository ResearchGraph and LSIP readiness is not asserted by the Lab local gate",
+    "Factory and Canon integration belongs to txw7/neu",
+    "the Lab Lean kernel metatheory still has explicit proof debt",
+    "the active RH Lean environment is separately pinned in txw7/research and is not merged into Lab Lean v4.29.1"
+  ]
+}
