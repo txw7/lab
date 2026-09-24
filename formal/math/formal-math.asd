@@ -5,6 +5,12 @@
   :components
   ((:file "package")
    (:file "core")
+   (:file "math-subsumption")
+   (:file "math-asymptotics")
+   (:file "math-experiment-protocol")
+   (:file "math-falsification")
+   (:file "math-counterexample-analysis")
+   (:file "math-theorem-match")
    (:file "projection")
    (:file "formal-native")
    (:file "research-wire")
