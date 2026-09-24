@@ -114,4 +114,248 @@
     (%test-assert (find-math-provider :lean-provider) "Lean provider declaration missing")
     (%test-assert (null (math-provider-executor (find-math-provider :lean-provider)))
                   "Declared provider should remain capability-missing until bound")
+
+    (let* ((x (make-math-expression-v1 :variable :name "x"))
+           (three (make-math-expression-v1 :constant :value 3))
+           (zero (make-math-expression-v1 :constant :value 0))
+           (stronger (make-math-expression-v1 :gt x three))
+           (weaker (make-math-expression-v1 :gt x zero))
+           (subsumption (math-subsumption-v1 stronger weaker))
+           (match
+             (match-math-theorem-v1
+              :theorem-ref "theorem:positive"
+              :theorem-conclusion stronger
+              :target-ref "claim:positive"
+              :target-expression weaker
+              :required-hypotheses (list weaker)
+              :available-hypotheses (list stronger))))
+      (%test-assert (eq :subsumes
+                        (math-subsumption-result-v1-status subsumption))
+                    "Exact bound subsumption failed")
+      (%test-assert (eq :none
+                        (math-subsumption-result-v1-proof-effect subsumption))
+                    "Subsumption acquired proof authority")
+      (%test-assert (eq :matched
+                        (math-theorem-match-v1-conclusion-status match))
+                    "Theorem conclusion match failed")
+      (%test-assert
+       (eq :already-discharged
+           (getf (first (math-theorem-match-v1-hypothesis-statuses match))
+                 :status))
+       "Theorem hypothesis subsumption failed")
+      (let* ((unknown-required
+               (make-math-expression-v1 :application
+                                        (make-math-expression-v1 :variable :name "P")
+                                        x))
+             (unknown-match
+               (match-math-theorem-v1
+                :theorem-ref "theorem:unknown-hypothesis"
+                :theorem-conclusion stronger
+                :target-ref "claim:positive"
+                :target-expression weaker
+                :required-hypotheses (list unknown-required)
+                :available-hypotheses (list stronger)))
+             (new-subgoal-match
+               (match-math-theorem-v1
+                :theorem-ref "theorem:new-subgoal"
+                :theorem-conclusion stronger
+                :target-ref "claim:positive"
+                :target-expression weaker
+                :required-hypotheses (list weaker)
+                :available-hypotheses '())))
+        (%test-assert
+         (eq :unknown
+             (getf
+              (first
+               (math-theorem-match-v1-hypothesis-statuses
+                unknown-match))
+              :status))
+         "Unsupported hypothesis shape was not classified unknown")
+        (%test-assert
+         (eq :new-subgoal
+             (getf
+              (first
+               (math-theorem-match-v1-hypothesis-statuses
+                new-subgoal-match))
+              :status))
+         "Missing theorem hypothesis was not emitted as new subgoal")))
+
+    (let* ((relation
+             (make-math-asymptotic-relation-v1
+              :kind :uniform-big-o
+              :lhs "error(T,r)"
+              :rhs "main(T,r)"
+              :limit-variable "T"
+              :limit-direction :infinity
+              :parameter-domain "r>0"
+              :uniformity-variables '("r")
+              :constant-dependencies '("epsilon")))
+           (balance
+             (make-dominant-balance-v1
+              :source-expression-ref "expr:gaussian-tail"
+              :candidate-scale "1/(16 log log T)"
+              :relation :asymptotic-equivalent
+              :assumptions '("T sufficiently large")))
+           (experiment
+             (complete-math-experiment-v1
+              (make-math-experiment-v1
+               :class :extremizer-search
+               :hypothesis "contact rigidity"
+               :expected-result "one-cluster extremizer"
+               :configuration '(:samples 64))
+              '(:extremizer :two-cluster)
+              :counterexample-candidate)))
+      (%test-assert (eq :none
+                        (math-asymptotic-relation-v1-proof-effect relation))
+                    "Asymptotic relation acquired proof authority")
+      (%test-assert (eq :candidate (dominant-balance-v1-status balance))
+                    "Dominant balance status mismatch")
+      (%test-assert (eq :none (math-experiment-v1-proof-effect experiment))
+                    "Experiment acquired proof authority"))
+
+    (flet ((no-counterexample-provider (claim context provider)
+             (declare (ignore context))
+             (make-math-falsification-result-v1
+              :claim-ref (math-object-id claim)
+              :provider-ref
+              (math-falsification-provider-v1-provider-ref provider)
+              :status :no-counterexample-found
+              :tested-domain '(:small-exact 0 4)))
+           (counterexample-provider (claim context provider)
+             (declare (ignore context))
+             (make-math-falsification-result-v1
+              :claim-ref (math-object-id claim)
+              :provider-ref
+              (math-falsification-provider-v1-provider-ref provider)
+              :status :counterexample
+              :witness '(:x 2 :failure "two-cluster"))))
+      (register-math-falsification-provider-v1
+       (make-math-falsification-provider-v1
+        :provider-ref :small-exact
+        :supported-classes '(:math-claim)
+        :executor #'no-counterexample-provider
+        :cost-class :cheap))
+      (register-math-falsification-provider-v1
+       (make-math-falsification-provider-v1
+        :provider-ref :synthetic-adversarial
+        :supported-classes '(:math-claim)
+        :executor #'counterexample-provider
+        :cost-class :cheap))
+      (multiple-value-bind (result trace)
+          (run-math-falsification-pipeline-v1
+           (make-math-claim-v1
+            :id "claim:false-rigidity"
+            :statement "all contact phases form one cluster")
+           '(:small-exact :synthetic-adversarial))
+        (%test-assert (= 2 (length trace))
+                      "Falsification pipeline did not retain provider trace")
+        (%test-assert
+         (eq :counterexample
+             (math-falsification-result-v1-status result))
+         "Falsification pipeline missed counterexample")
+        (%test-assert (eq :none
+                          (math-falsification-result-v1-proof-effect result))
+                      "Counterexample pipeline acquired theorem authority")))
+    (let* ((repair-a
+             (make-repair-condition-candidate-v1
+              :feature-kind :phase-concentration
+              :condition-row '(:clusters 1)
+              :counterexample-exclusion 3
+              :positive-example-preservation 3
+              :mathematical-simplicity 2
+              :theorem-compatibility 2
+              :formalizability 2))
+           (repair-b
+             (make-repair-condition-candidate-v1
+              :feature-kind :spectral-gap
+              :condition-row '(:gap :positive)
+              :counterexample-exclusion 2
+              :positive-example-preservation 2
+              :mathematical-simplicity 1
+              :theorem-compatibility 1
+              :formalizability 1))
+           (analysis
+             (analyze-math-counterexample-v1
+              :target-claim-ref "claim:false-rigidity"
+              :counterexample-ref "counterexample:two-cluster"
+              :positive-example-refs '("example:one-cluster")
+              :feature-observations
+              '((:feature :phase-concentration :counterexample :two-cluster
+                 :positive :one-cluster))
+              :repair-candidates (list repair-b repair-a))))
+      (%test-assert
+       (eq :phase-concentration
+           (repair-condition-candidate-v1-feature-kind
+            (first (counterexample-analysis-v1-repair-candidates analysis))))
+       "Counterexample repair ranking failed")
+      (%test-assert (eq :none (counterexample-analysis-v1-proof-effect analysis))
+                    "Counterexample analysis acquired proof authority"))
+    (let* ((x (make-math-expression-v1 :variable :name "x"))
+           (y (make-math-expression-v1 :variable :name "y"))
+           (three (make-math-expression-v1 :constant :value 3))
+           (strict (make-math-expression-v1 :gt x three))
+           (nonstrict (make-math-expression-v1 :ge x three))
+           (cross-subsumption
+             (math-subsumption-v1 strict nonstrict))
+           (pattern
+             (make-math-expression-v1
+              :application
+              (make-math-expression-v1 :variable :name "P")
+              x))
+           (target
+             (make-math-expression-v1
+              :application
+              (make-math-expression-v1 :variable :name "P")
+              y))
+           (unified
+             (match-math-theorem-v1
+              :theorem-ref "theorem:rename"
+              :theorem-conclusion pattern
+              :target-ref "claim:renamed"
+              :target-expression target
+              :required-hypotheses '()
+              :available-hypotheses '())))
+      (%test-assert
+       (eq :subsumes
+           (math-subsumption-result-v1-status cross-subsumption))
+       "Strict lower bound did not subsume matching non-strict lower bound")
+      (%test-assert
+       (eq :matched (math-theorem-match-v1-conclusion-status unified))
+       "Theorem matcher failed variable substitution")
+      (%test-assert
+       (assoc "x" (math-theorem-match-v1-substitution unified)
+              :test #'equal)
+       "Theorem matcher did not retain variable substitution"))
+
+    (let* ((side-condition
+             (make-analytic-side-condition-v1
+              :kind :dominated-convergence
+              :target-ref "claim:termwise-differentiate"
+              :condition-expression "dominating integrable envelope"
+              :domain-ref "critical-strip"))
+           (saddle
+             (make-saddle-analysis-v1
+              :source-expression-ref "expr:prime-block"
+              :stationary-point "y=1/(4r)"
+              :curvature "-2r"
+              :width "r^(-1/2)"
+              :dominant-region '(:center "1/(4r)" :width "r^(-1/2)")
+              :tail-estimates '(:status :candidate)))
+           (extremizer
+             (make-extremizer-search-v1
+              :target-claim-ref "claim:local-rigidity"
+              :equality-cases '("one-cluster")
+              :near-equality-cases '("narrow-two-cluster")
+              :extremizers '("one-cluster")
+              :generated-conjecture-refs '("claim:cluster-repair")
+              :missing-hypothesis-refs '("hypothesis:one-cluster"))))
+      (%test-assert
+       (eq :none (analytic-side-condition-v1-proof-effect side-condition))
+       "Analytic side condition acquired proof authority")
+      (%test-assert
+       (eq :none (saddle-analysis-v1-proof-effect saddle))
+       "Saddle analysis acquired proof authority")
+      (%test-assert
+       (eq :none (extremizer-search-v1-proof-effect extremizer))
+       "Extremizer search acquired proof authority"))
     t))
