@@ -290,4 +290,40 @@
        "Counterexample repair ranking failed")
       (%test-assert (eq :none (counterexample-analysis-v1-proof-effect analysis))
                     "Counterexample analysis acquired proof authority"))
+    (let ((conditions
+            (analytic-side-conditions-for-transformation-v1
+             :differentiate-under-integral
+             :source-transformation-ref "transform:contact-derivative"
+             :subject-ref "integral:gaussian-prime"
+             :domain-row '(:r ">0" :T :real))))
+      (%test-assert (= 2 (length conditions))
+                    "Analytic side-condition generation count mismatch")
+      (%test-assert
+       (equal '(:dominated-convergence :termwise-differentiability)
+              (mapcar #'analytic-side-condition-v1-kind conditions))
+       "Analytic side-condition kinds mismatch")
+      (%test-assert
+       (every (lambda (row)
+                (eq :none
+                    (analytic-side-condition-v1-proof-effect row)))
+              conditions)
+       "Analytic side-condition carrier acquired proof authority")
+      (%test-assert
+       (not (analytic-side-condition-set-closed-p-v1 conditions))
+       "Open analytic side conditions were treated as discharged"))
+
+    (let ((saddle
+            (make-saddle-analysis-v1
+             :source-expression-ref "expr:exp(y/2-r*y^2)"
+             :variable-ref "y"
+             :stationary-point "1/(4r)"
+             :curvature "-2r"
+             :width "r^(-1/2)"
+             :dominant-region "|y-1/(4r)| <= C r^(-1/2)"
+             :tail-estimate "Gaussian"
+             :assumptions '("r>0"))))
+      (%test-assert (eq :candidate (saddle-analysis-v1-status saddle))
+                    "Saddle analysis status mismatch")
+      (%test-assert (eq :none (saddle-analysis-v1-proof-effect saddle))
+                    "Saddle analysis acquired proof authority"))
     t))
