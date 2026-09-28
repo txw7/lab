@@ -77,6 +77,19 @@ target = {
         "target_source_sha256": digest,
         "target_occurrence_ref": "occurrence:fixture",
         "subject_snapshot_ref": "snapshot:fixture",
+        "program_graph_address": {
+            "schema": "ProgramGraphAddressBindingV1",
+            "authority_ref": "program-graph:fixture-authority",
+            "source_revision": "sha256:fixture-revision",
+            "source_graph_root": "sha256:fixture-graph-root",
+            "h001_graph_object_ref": "h001:fixture-object",
+            "h001_bundle_ref": "h001:fixture-bundle",
+            "subject_snapshot_ref": "snapshot:fixture",
+            "h002_address_ref": "h002:fixture-address",
+            "h002_containment_witness_ref": "h002:fixture-containment",
+            "mapping_witness_ref": "h002:fixture-mapping",
+            "target_occurrence_ref": "occurrence:fixture",
+        },
     },
 }
 plan = {
@@ -112,6 +125,7 @@ payload = {
     "target_ref": target_ref,
     "target_occurrence_ref": "occurrence:fixture",
     "subject_snapshot_ref": "snapshot:fixture",
+    "program_graph_address": target["metadata"]["program_graph_address"],
     "checker_plan_ref": plan_ref,
     "checker_result_ref": result_ref,
     "target_record": target,
@@ -146,6 +160,10 @@ assert accepted["status"] == "CHECKED"
 assert accepted["theorem_status_effect"] == "NONE"
 assert accepted["formal_judgment"]["kind"] == "LEAN_CHECKED_THEOREM_V1"
 assert accepted["formal_judgment"]["target_occurrence_ref"] == "occurrence:fixture"
+address = accepted["formal_judgment"]["program_graph_address"]
+assert address["schema"] == "ProgramGraphAddressBindingV1"
+assert address["h001_graph_object_ref"] == "h001:fixture-object"
+assert address["h002_address_ref"] == "h002:fixture-address"
 assert accepted["formal_judgment"]["checker_result_ref"] == "sha256:" + "3" * 64
 assert rejected["status"] == "REJECTED"
 assert rejected["theorem_status_effect"] == "NONE"

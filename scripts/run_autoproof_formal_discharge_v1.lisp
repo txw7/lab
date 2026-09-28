@@ -179,6 +179,7 @@
   (let* ((target-ref (%json-get payload "target_ref"))
          (occurrence-ref (%json-get payload "target_occurrence_ref"))
          (snapshot-ref (%json-get payload "subject_snapshot_ref"))
+         (program-graph-address (%json-get payload "program_graph_address"))
          (plan-ref (%json-get payload "checker_plan_ref"))
          (result-ref (%json-get payload "checker_result_ref"))
          (target (%json-get payload "target_record"))
@@ -186,6 +187,22 @@
          (result (%json-get payload "checker_result"))
          (metadata (%json-get target "metadata")))
     (unless (and target-ref occurrence-ref snapshot-ref plan-ref result-ref
+                 (equal "ProgramGraphAddressBindingV1"
+                        (%json-get program-graph-address "schema"))
+                 (%json-get program-graph-address "authority_ref")
+                 (%json-get program-graph-address "source_revision")
+                 (%json-get program-graph-address "source_graph_root")
+                 (%json-get program-graph-address "h001_graph_object_ref")
+                 (%json-get program-graph-address "h001_bundle_ref")
+                 (%json-get program-graph-address "h002_address_ref")
+                 (%json-get program-graph-address "h002_containment_witness_ref")
+                 (%json-get program-graph-address "mapping_witness_ref")
+                 (equal occurrence-ref
+                        (%json-get program-graph-address "target_occurrence_ref"))
+                 (equal snapshot-ref
+                        (%json-get program-graph-address "subject_snapshot_ref"))
+                 (equal program-graph-address
+                        (%json-get metadata "program_graph_address"))
                  (equal target-ref (%json-get target "object_id"))
                  (equal plan-ref (%json-get plan "object_id"))
                  (equal result-ref (%json-get result "object_id"))
@@ -235,6 +252,7 @@
      (cons "target_ref" target-ref)
      (cons "target_occurrence_ref" occurrence-ref)
      (cons "subject_snapshot_ref" snapshot-ref)
+     (cons "program_graph_address" program-graph-address)
      (cons "checker_result_ref" result-ref)
      (cons "checker_plan_ref" plan-ref))))
 
