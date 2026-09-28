@@ -58,6 +58,99 @@ assert row["status"] == "NO_FORMAL_OBLIGATION"
 assert row["theorem_status_effect"] == "NONE"
 PY
 
+python3 - "$TMP_AUTOPROOF/request.json" "$TMP_AUTOPROOF/rejected-request.json" <<'PY'
+import json
+import pathlib
+import sys
+
+target_ref = "sha256:" + "1" * 64
+plan_ref = "sha256:" + "2" * 64
+result_ref = "sha256:" + "3" * 64
+digest = "a" * 64
+target = {
+    "schema": "ProofObjectV1",
+    "object_type": "FormalLemma",
+    "object_id": target_ref,
+    "status": "UNPROVEN",
+    "metadata": {
+        "expected_theorem": "Fixture.theorem",
+        "target_source_sha256": digest,
+        "target_occurrence_ref": "occurrence:fixture",
+        "subject_snapshot_ref": "snapshot:fixture",
+    },
+}
+plan = {
+    "schema": "ProofCheckPlanV1",
+    "object_id": plan_ref,
+    "goal_ref": target_ref,
+    "expected_theorem": "Fixture.theorem",
+    "lean_module": "Fixture.lean",
+    "target_source_sha256": digest,
+    "dependency_source_digests": {},
+    "lean_version": "Lean fixture",
+    "mathlib_revision": "mathlib-fixture",
+    "lake_manifest_sha256": "b" * 64,
+}
+result = {
+    "schema": "CheckerResultV1",
+    "object_id": result_ref,
+    "status": "CHECKED",
+    "trusted": True,
+    "process_status": 0,
+    "exit_status": 0,
+    "plan_ref": plan_ref,
+    "expected_theorem": "Fixture.theorem",
+    "module_path": "Fixture.lean",
+    "source_sha256": digest,
+    "module_source_sha256": digest,
+    "dependency_source_digests": {},
+    "lean_version": "Lean fixture",
+    "mathlib_revision": "mathlib-fixture",
+    "lake_manifest_sha256": "b" * 64,
+}
+payload = {
+    "target_ref": target_ref,
+    "target_occurrence_ref": "occurrence:fixture",
+    "subject_snapshot_ref": "snapshot:fixture",
+    "checker_plan_ref": plan_ref,
+    "checker_result_ref": result_ref,
+    "target_record": target,
+    "checker_plan": plan,
+    "checker_result": result,
+}
+request = {
+    "schema": "LSIPTheoremMathSearchResultV1",
+    "status": "FORMAL_RECEIPT_SUBMITTED",
+    "formal_obligation": {
+        "obligation_id": "fixture-obligation",
+        "operation_id": "judge_lean_checker_receipt",
+        "payload_row": payload,
+    },
+}
+pathlib.Path(sys.argv[1]).write_text(json.dumps(request), encoding="utf-8")
+payload["target_occurrence_ref"] = "occurrence:wrong"
+pathlib.Path(sys.argv[2]).write_text(json.dumps(request), encoding="utf-8")
+PY
+
+sbcl --script "$ROOT/scripts/run_autoproof_formal_discharge_v1.lisp" \
+  "$TMP_AUTOPROOF/request.json" "$TMP_AUTOPROOF/judgment.json"
+sbcl --script "$ROOT/scripts/run_autoproof_formal_discharge_v1.lisp" \
+  "$TMP_AUTOPROOF/rejected-request.json" "$TMP_AUTOPROOF/rejected-judgment.json"
+python3 - "$TMP_AUTOPROOF/judgment.json" "$TMP_AUTOPROOF/rejected-judgment.json" <<'PY'
+import json
+import pathlib
+import sys
+accepted = json.loads(pathlib.Path(sys.argv[1]).read_text())
+rejected = json.loads(pathlib.Path(sys.argv[2]).read_text())
+assert accepted["status"] == "CHECKED"
+assert accepted["theorem_status_effect"] == "NONE"
+assert accepted["formal_judgment"]["kind"] == "LEAN_CHECKED_THEOREM_V1"
+assert accepted["formal_judgment"]["target_occurrence_ref"] == "occurrence:fixture"
+assert accepted["formal_judgment"]["checker_result_ref"] == "sha256:" + "3" * 64
+assert rejected["status"] == "REJECTED"
+assert rejected["theorem_status_effect"] == "NONE"
+PY
+
 rm -rf "$TMP_AUTOPROOF"
 trap - EXIT
 

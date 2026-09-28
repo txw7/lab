@@ -20,7 +20,8 @@
 
 (asdf:load-asd
  (merge-pathnames "formal/formal.asd" *autoproof-formal-root*))
-(asdf:load-system "formal")
+(load (merge-pathnames "formal/package.lisp" *autoproof-formal-root*))
+(load (merge-pathnames "formal/json-lite.lisp" *autoproof-formal-root*))
 
 (defun %json-get (object key)
   (cdr (assoc key object :test #'string=)))
@@ -174,10 +175,73 @@
    (copy-list (getf row :semantic-tags))
    :metadata (copy-tree (getf row :metadata))))
 
+(defun %lean-receipt-judgment (payload)
+  (let* ((target-ref (%json-get payload "target_ref"))
+         (occurrence-ref (%json-get payload "target_occurrence_ref"))
+         (snapshot-ref (%json-get payload "subject_snapshot_ref"))
+         (plan-ref (%json-get payload "checker_plan_ref"))
+         (result-ref (%json-get payload "checker_result_ref"))
+         (target (%json-get payload "target_record"))
+         (plan (%json-get payload "checker_plan"))
+         (result (%json-get payload "checker_result"))
+         (metadata (%json-get target "metadata")))
+    (unless (and target-ref occurrence-ref snapshot-ref plan-ref result-ref
+                 (equal target-ref (%json-get target "object_id"))
+                 (equal plan-ref (%json-get plan "object_id"))
+                 (equal result-ref (%json-get result "object_id"))
+                 (equal "ProofObjectV1" (%json-get target "schema"))
+                 (equal "FormalLemma" (%json-get target "object_type"))
+                 (member (%json-get target "status")
+                         '("CANDIDATE" "UNPROVEN" "CHECKING")
+                         :test #'equal)
+                 (equal occurrence-ref (%json-get metadata "target_occurrence_ref"))
+                 (equal snapshot-ref (%json-get metadata "subject_snapshot_ref")))
+      (error "target identity is incomplete or differs from the addressed theorem"))
+    (unless (and
+             (equal "ProofCheckPlanV1" (%json-get plan "schema"))
+             (equal target-ref (%json-get plan "goal_ref"))
+             (equal (%json-get metadata "expected_theorem")
+                    (%json-get plan "expected_theorem"))
+             (equal (%json-get metadata "target_source_sha256")
+                    (%json-get plan "target_source_sha256")))
+      (error "checker plan does not identify the exact theorem target"))
+    (unless (and
+             (equal "CheckerResultV1" (%json-get result "schema"))
+             (equal result-ref (%json-get result "object_id"))
+             (equal "CHECKED" (%json-get result "status"))
+             (eq t (%json-get result "trusted"))
+             (eql 0 (%json-get result "process_status"))
+             (eql 0 (%json-get result "exit_status"))
+             (equal plan-ref (%json-get result "plan_ref"))
+             (equal (%json-get plan "expected_theorem")
+                    (%json-get result "expected_theorem"))
+             (equal (%json-get plan "lean_module")
+                    (%json-get result "module_path"))
+             (equal (%json-get plan "target_source_sha256")
+                    (%json-get result "source_sha256"))
+             (equal (%json-get plan "target_source_sha256")
+                    (%json-get result "module_source_sha256"))
+             (equal (%json-get plan "dependency_source_digests")
+                    (%json-get result "dependency_source_digests"))
+             (equal (%json-get plan "lean_version")
+                    (%json-get result "lean_version"))
+             (equal (%json-get plan "mathlib_revision")
+                    (%json-get result "mathlib_revision"))
+             (equal (%json-get plan "lake_manifest_sha256")
+                    (%json-get result "lake_manifest_sha256")))
+      (error "Lean checker receipt is not a successful result for this exact plan"))
+    (list
+     (cons "kind" "LEAN_CHECKED_THEOREM_V1")
+     (cons "target_ref" target-ref)
+     (cons "target_occurrence_ref" occurrence-ref)
+     (cons "subject_snapshot_ref" snapshot-ref)
+     (cons "checker_result_ref" result-ref)
+     (cons "checker_plan_ref" plan-ref))))
+
 (defun %result-row (search-result)
   (let* ((candidate (%json-get search-result "candidate"))
          (candidate-ref
-           (and candidate
+           (and (listp candidate)
                 (%json-get candidate "carrier_ref")))
          (obligation
            (%json-get search-result "formal_obligation")))
@@ -198,7 +262,36 @@
                 (%wire-decode
                  (%json-get obligation "payload_row"))))
          (case operation-id
+           (:judge-lean-checker-receipt
+            (multiple-value-bind (judgment rejection)
+                (handler-case
+                    (values (%lean-receipt-judgment payload) nil)
+                  (error (condition)
+                    (values nil (princ-to-string condition))))
+              (list
+               (cons "schema" "LabFormalDischargeResultV1")
+               (cons "candidate_ref" candidate-ref)
+               (cons "formal_obligation_id"
+                     (%json-get obligation "obligation_id"))
+               (cons "formal_operation_id" "judge_lean_checker_receipt")
+               (cons "status" (if judgment "CHECKED" "REJECTED"))
+               (cons "theorem_status_effect" "NONE")
+               (cons "formal_judgment" (or judgment :json-null))
+               (cons "evidence"
+                     (if judgment
+                         (list
+                          (cons "evidence_kind" "pinned_checker_receipt_binding")
+                          (cons "trusted_boundaries"
+                                '("lean_checker_execution" "research_checker_receipt_validation"))
+                          (cons "checker_result_ref"
+                                (%json-get payload "checker_result_ref"))
+                          (cons "checker_plan_ref"
+                                (%json-get payload "checker_plan_ref")))
+                         (list
+                          (cons "evidence_kind" "receipt_binding_rejected")
+                          (cons "rejection_reason" rejection)))))))
            (:check-smt-spec
+            (asdf:load-system "formal")
             (let* ((spec (%smt-spec-from-row payload))
                    (result
                      (mini-kernel:invoke-formal-capability
