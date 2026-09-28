@@ -58,7 +58,7 @@ assert row["status"] == "NO_FORMAL_OBLIGATION"
 assert row["theorem_status_effect"] == "NONE"
 PY
 
-python3 - "$TMP_AUTOPROOF/request.json" "$TMP_AUTOPROOF/rejected-request.json" <<'PY'
+python3 - "$TMP_AUTOPROOF/request.json" "$TMP_AUTOPROOF/rejected-request.json" "$TMP_AUTOPROOF/address-mismatch-request.json" <<'PY'
 import json
 import pathlib
 import sys
@@ -144,18 +144,24 @@ request = {
 pathlib.Path(sys.argv[1]).write_text(json.dumps(request), encoding="utf-8")
 payload["target_occurrence_ref"] = "occurrence:wrong"
 pathlib.Path(sys.argv[2]).write_text(json.dumps(request), encoding="utf-8")
+payload["target_occurrence_ref"] = "occurrence:fixture"
+payload["program_graph_address"]["mapping_witness_ref"] = "h002:wrong-mapping"
+pathlib.Path(sys.argv[3]).write_text(json.dumps(request), encoding="utf-8")
 PY
 
 sbcl --script "$ROOT/scripts/run_autoproof_formal_discharge_v1.lisp" \
   "$TMP_AUTOPROOF/request.json" "$TMP_AUTOPROOF/judgment.json"
 sbcl --script "$ROOT/scripts/run_autoproof_formal_discharge_v1.lisp" \
   "$TMP_AUTOPROOF/rejected-request.json" "$TMP_AUTOPROOF/rejected-judgment.json"
-python3 - "$TMP_AUTOPROOF/judgment.json" "$TMP_AUTOPROOF/rejected-judgment.json" <<'PY'
+sbcl --script "$ROOT/scripts/run_autoproof_formal_discharge_v1.lisp" \
+  "$TMP_AUTOPROOF/address-mismatch-request.json" "$TMP_AUTOPROOF/address-mismatch-judgment.json"
+python3 - "$TMP_AUTOPROOF/judgment.json" "$TMP_AUTOPROOF/rejected-judgment.json" "$TMP_AUTOPROOF/address-mismatch-judgment.json" <<'PY'
 import json
 import pathlib
 import sys
 accepted = json.loads(pathlib.Path(sys.argv[1]).read_text())
 rejected = json.loads(pathlib.Path(sys.argv[2]).read_text())
+address_mismatch = json.loads(pathlib.Path(sys.argv[3]).read_text())
 assert accepted["status"] == "CHECKED"
 assert accepted["theorem_status_effect"] == "NONE"
 assert accepted["formal_judgment"]["kind"] == "LEAN_CHECKED_THEOREM_V1"
@@ -167,6 +173,8 @@ assert address["h002_address_ref"] == "h002:fixture-address"
 assert accepted["formal_judgment"]["checker_result_ref"] == "sha256:" + "3" * 64
 assert rejected["status"] == "REJECTED"
 assert rejected["theorem_status_effect"] == "NONE"
+assert address_mismatch["status"] == "REJECTED"
+assert address_mismatch["theorem_status_effect"] == "NONE"
 PY
 
 rm -rf "$TMP_AUTOPROOF"
