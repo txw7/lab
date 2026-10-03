@@ -1,0 +1,166 @@
+{
+  "repository": "txw7/lab",
+  "commit": "50b9430f0ef8c62caa0ef37d9cf54b942534a612",
+  "files": [
+    {
+      "path": "formal/package.lisp",
+      "git_blob_sha": "db572d4abb9aedd2d8a0b3addaeb6fedc74e9e7a",
+      "url": "https://github.com/txw7/lab/blob/50b9430f0ef8c62caa0ef37d9cf54b942534a612/formal/package.lisp",
+      "utf8_length": 51331,
+      "ends_lf": true,
+      "sha256": "b3630d8e0944cda14e66d8a7f5309a19b726134b40c34a14943963f770fa3f80"
+    },
+    {
+      "path": "formal/term-env.lisp",
+      "git_blob_sha": "10d8bdc6b5ca655123c418661c5968234a73875d",
+      "url": "https://github.com/txw7/lab/blob/50b9430f0ef8c62caa0ef37d9cf54b942534a612/formal/term-env.lisp",
+      "utf8_length": 1158,
+      "ends_lf": true,
+      "sha256": "9291f32430ded427a98b88e908f8d2ac92381888cc75795e6127f7361471f637"
+    },
+    {
+      "path": "formal/checker-implementation.lisp",
+      "git_blob_sha": "9ddb46de230512cdae99c9b0f1c6bec7ce816979",
+      "url": "https://github.com/txw7/lab/blob/50b9430f0ef8c62caa0ef37d9cf54b942534a612/formal/checker-implementation.lisp",
+      "utf8_length": 12093,
+      "ends_lf": true,
+      "sha256": "d344343ba80b1ac7166b69978d7d9fdeabac7c918c936f4294c2c31ca0eaf18e"
+    },
+    {
+      "path": "formal/subst.lisp",
+      "git_blob_sha": "e714d0f3c3b18b2af610023dee082cabf7a4d78c",
+      "url": "https://github.com/txw7/lab/blob/50b9430f0ef8c62caa0ef37d9cf54b942534a612/formal/subst.lisp",
+      "utf8_length": 3235,
+      "ends_lf": true,
+      "sha256": "6ceeae4015ba8035fac24c42b1b79bea33cef166dff5a684e00e0f4f59837501"
+    },
+    {
+      "path": "formal/reduce.lisp",
+      "git_blob_sha": "f633176a798553cb0c1fb2369b6582edc92261ac",
+      "url": "https://github.com/txw7/lab/blob/50b9430f0ef8c62caa0ef37d9cf54b942534a612/formal/reduce.lisp",
+      "utf8_length": 3886,
+      "ends_lf": true,
+      "sha256": "c4fca10e802a0af0b28f9db376a0c772d8cf822b450f51726c62b5f8ebab4e53"
+    },
+    {
+      "path": "formal/typecheck.lisp",
+      "git_blob_sha": "7e4d69e4365fdb6c4012d63b170e0aade06b3655",
+      "url": "https://github.com/txw7/lab/blob/50b9430f0ef8c62caa0ef37d9cf54b942534a612/formal/typecheck.lisp",
+      "utf8_length": 3845,
+      "ends_lf": true,
+      "sha256": "a389a3e2fca58f88bc67d312e471e0ae4f542b9ce1e91ceb1c84f1415798feec"
+    },
+    {
+      "path": "formal/bootstrap.lisp",
+      "git_blob_sha": "272251af01e7b2fa1773bb583df8a703c141fbc9",
+      "url": "https://github.com/txw7/lab/blob/50b9430f0ef8c62caa0ef37d9cf54b942534a612/formal/bootstrap.lisp",
+      "utf8_length": 38352,
+      "ends_lf": true,
+      "sha256": "f391619a0f48af434eae074fa737d83de43022449590971aa3c5b7ca9f1dc22a"
+    },
+    {
+      "path": "formal/certificate.lisp",
+      "git_blob_sha": "9f6ac9341162694ed9f7bd62c45d4d10e05b3480",
+      "url": "https://github.com/txw7/lab/blob/50b9430f0ef8c62caa0ef37d9cf54b942534a612/formal/certificate.lisp",
+      "utf8_length": 3717,
+      "ends_lf": true,
+      "sha256": "3e763df6b426e08bcddc7f490f73d4e6efd4673e22a03e13be94af8b9bd67757"
+    },
+    {
+      "path": "formal/proof-ir.lisp",
+      "git_blob_sha": "434ccab28a3933010ed822d73a5fa182caa19bca",
+      "url": "https://github.com/txw7/lab/blob/50b9430f0ef8c62caa0ef37d9cf54b942534a612/formal/proof-ir.lisp",
+      "utf8_length": 8664,
+      "ends_lf": true,
+      "sha256": "a1b018b797975699d8e06f23575502c63bbe8454247abd1b11e9deb7788ef6f4"
+    },
+    {
+      "path": "formal/theorem-ir.lisp",
+      "git_blob_sha": "8f19f2f2e1c7a6b8bbd9a876ea35c97df5899690",
+      "url": "https://github.com/txw7/lab/blob/50b9430f0ef8c62caa0ef37d9cf54b942534a612/formal/theorem-ir.lisp",
+      "utf8_length": 18716,
+      "ends_lf": true,
+      "sha256": "1d667c2ff805d453f422528b5d206d25ab115c983b485f5043dbd831325872ce"
+    },
+    {
+      "path": "formal/theorem-proof.lisp",
+      "git_blob_sha": "bcc5232288441327b2c412aa8a94ae165c2363eb",
+      "url": "https://github.com/txw7/lab/blob/50b9430f0ef8c62caa0ef37d9cf54b942534a612/formal/theorem-proof.lisp",
+      "utf8_length": 19163,
+      "ends_lf": true,
+      "sha256": "a70279d5848e274554e76b96f4c7b1708804562b07b994bcd3b999def47a1b07"
+    },
+    {
+      "path": "formal/reference-checker.lisp",
+      "git_blob_sha": "ecf1ae958167acc2fb2fc9b9e486ab5c2151fa27",
+      "url": "https://github.com/txw7/lab/blob/50b9430f0ef8c62caa0ef37d9cf54b942534a612/formal/reference-checker.lisp",
+      "utf8_length": 13155,
+      "ends_lf": true,
+      "sha256": "65eb76bc91b584b8a6cea8e2d52e9a6daa03e041703d2c2fa69930c9141dc6d6"
+    },
+    {
+      "path": "formal/backend-protocol.lisp",
+      "git_blob_sha": "31cfc6683620cb35dc8e09073b14efa70e05199e",
+      "url": "https://github.com/txw7/lab/blob/50b9430f0ef8c62caa0ef37d9cf54b942534a612/formal/backend-protocol.lisp",
+      "utf8_length": 15172,
+      "ends_lf": true,
+      "sha256": "140d4cbe97c69337f0ec668f2274147f685f0741d27ab115b3d530ff50b96614"
+    },
+    {
+      "path": "formal/advisory-artifacts.lisp",
+      "git_blob_sha": "4efcf8373d7644bcdb8f44b8144ebc7e570d37f8",
+      "url": "https://github.com/txw7/lab/blob/50b9430f0ef8c62caa0ef37d9cf54b942534a612/formal/advisory-artifacts.lisp",
+      "utf8_length": 2832,
+      "ends_lf": true,
+      "sha256": "8adcd0069269b3fb5942d6743a926c725883e6f6e2ea71265d91fa640820e175"
+    },
+    {
+      "path": "formal/checked-proposals.lisp",
+      "git_blob_sha": "d567c94c645dcdbfbc327af54d8543ba039dedf3",
+      "url": "https://github.com/txw7/lab/blob/50b9430f0ef8c62caa0ef37d9cf54b942534a612/formal/checked-proposals.lisp",
+      "utf8_length": 2550,
+      "ends_lf": true,
+      "sha256": "d274b225f9256dc097c6ebfbbf57c6832616c679a214361e3dbeca26e24862dc"
+    },
+    {
+      "path": "formal/stage-ir.lisp",
+      "git_blob_sha": "8765e2a0a60f16251d59aeb3983959eae191467d",
+      "url": "https://github.com/txw7/lab/blob/50b9430f0ef8c62caa0ef37d9cf54b942534a612/formal/stage-ir.lisp",
+      "utf8_length": 7780,
+      "ends_lf": true,
+      "sha256": "0bfdaf80e4c14d6f7651fa009a1f67989e1b08fbcd5d9b047c252199f91f0a1f"
+    },
+    {
+      "path": "formal/json-lite.lisp",
+      "git_blob_sha": "084cf7d456a643f92ea11ec69b7bb5c540ebb332",
+      "url": "https://github.com/txw7/lab/blob/50b9430f0ef8c62caa0ef37d9cf54b942534a612/formal/json-lite.lisp",
+      "utf8_length": 5786,
+      "ends_lf": true,
+      "sha256": "1af336219377e9b0928866ba8c82a0626b38ee8611dcc9e52a7fd5c49d44679f"
+    },
+    {
+      "path": "formal/formal.asd",
+      "git_blob_sha": "0f1bf89830ac056d12eadeae4f949cf8d7ac88d5",
+      "url": "https://github.com/txw7/lab/blob/50b9430f0ef8c62caa0ef37d9cf54b942534a612/formal/formal.asd",
+      "utf8_length": 1154,
+      "ends_lf": true,
+      "sha256": "e5b0e06226c55e34460d291f16b90b968696c464ce597466c5207d9d746f198b"
+    },
+    {
+      "path": "formal/backend-protocols.md",
+      "git_blob_sha": "0debecaeaffcda8fedce41d7d635c5af7a88b7c2",
+      "url": "https://github.com/txw7/lab/blob/50b9430f0ef8c62caa0ef37d9cf54b942534a612/formal/backend-protocols.md",
+      "utf8_length": 17415,
+      "ends_lf": true,
+      "sha256": "291b2d54438f4d21446d082c5b34ec8be4ddc052ecda2725384b8a3754510da7"
+    },
+    {
+      "path": "formal/kernel.lisp",
+      "git_blob_sha": "a9fc6537cfb782453f18a993c1f919865d0c9894",
+      "url": "https://github.com/txw7/lab/blob/50b9430f0ef8c62caa0ef37d9cf54b942534a612/formal/kernel.lisp",
+      "utf8_length": 1519,
+      "ends_lf": true,
+      "sha256": "57248abb47fb286e063ecf9943fef005f79fef06311ca308d09d93a8bd19ab6c"
+    }
+  ]
+}

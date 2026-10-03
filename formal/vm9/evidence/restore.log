@@ -1,0 +1,16 @@
+VM9 LAB PHASE MODEL ACCEPTED: 2 native, 2 reference, 13 residual OPEN; restore
+
+; file: /workspace/shared/vm9-lab-closure/owners/lab/formal/checker-implementation.lisp
+; in: DEFUN MAKE-KERNEL-FAMILY-INGESTED-ALGORITHM
+;     (LIST :FRAGMENT :MINI-KERNEL-FROZEN-CORE :CONFIG-DIGEST
+;           MINI-KERNEL::*CURRENT-CONFIG-DIGEST*)
+; 
+; caught WARNING:
+;   undefined variable: MINI-KERNEL::*CURRENT-CONFIG-DIGEST*
+; 
+; compilation unit finished
+;   Undefined functions:
+;     INGEST-DECLARATIVECORE-DEF-PROGRAM INGEST-MINI-KERNEL-WHNF-PROGRAM LEAN-DEF-PROGRAM-SOURCE-DIGEST LEAN-DEF-PROGRAM-SOURCE-PATH LOWER-INGESTED-LEAN-DEF-PROGRAM-TO-DEFIR MERGE-DEFIR-PROGRAMS VALIDATE-LEAN-DEF-PROGRAM
+;   Undefined variable:
+;     *CURRENT-CONFIG-DIGEST*
+;   caught 1 WARNING condition

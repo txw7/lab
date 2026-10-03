@@ -1,0 +1,63 @@
+{
+  "schema": "vm9-lab-native-replay.v1",
+  "lab_revision": "50b9430f0ef8c62caa0ef37d9cf54b942534a612",
+  "binding_sha256": "99c9c2a14fa7df3fb13e85d7ebd7ea6635f5bf4f680a38f6541e55bcf9b089b5",
+  "abstract_projection_digests": {
+    "model_scope": "vm9.phase-progress-projection.v1",
+    "state_schema_sha256": "398e64f517d7fd39652f6cea71ef01f1ee134070de21769b1b970672a5feab06",
+    "transition_relation_sha256": "c15971591c523546feb53bb96ee6f5ac8f4a85656bfcdcf2c3b07504ea7ac52b",
+    "theorem_set_sha256": "1fe7c30293535c79b169a13685471d6ee919fa138898023ba313377768e4f916",
+    "model_document_sha256": "64ed7f28ee3a53754c073dab6df8fe050608380181a89a9635642cd85af131ae",
+    "proof_terms_source_sha256": "b3ecd7d820342f96b53c76396cb3dbfc2c848170c42aa139e566016e762f2971",
+    "correspondence_manifest_sha256": null,
+    "reactor_schema_sha256": null,
+    "independent_external_certificate_sha256": null
+  },
+  "full_vm9_subject_digest": null,
+  "state_transition_trace_correspondence": "open",
+  "integration_modules_sha256": {
+    "load-lab.lisp": "ada41ac925768cdf7a6d2a510cf0c9c70c4454a7640a59e1e12f791caadc76d3",
+    "integration.lisp": "a971f729a27073e2ff7aeb19209b3fa11faba1d69a30b7924324dac9154c1a30",
+    "phase-model.lisp": "b3ecd7d820342f96b53c76396cb3dbfc2c848170c42aa139e566016e762f2971",
+    "run.lisp": "99da757dd63a7c022b6337f34b4ec11a4cca3293f7a46d7ecf775c3caef40498",
+    "phase-model.json": "64ed7f28ee3a53754c073dab6df8fe050608380181a89a9635642cd85af131ae",
+    "domain-obligations.json": "3a54b92dd3fb869dcdf6d0e3da2f9d9f9fb75ecb20131cdebc7c48c4ab468052"
+  },
+  "authority": "abstract-phase-model-only",
+  "native_phase_model_certificates": 2,
+  "reference_phase_model_certificates": 2,
+  "fresh_process_replays": 2,
+  "abstract_model_claims": [
+    "phase-budget(0,9)",
+    "forall c,r:Nat, phase-budget(c,succ r) -> phase-budget(succ c,r)"
+  ],
+  "residual_obligations_open": 13,
+  "full_vm9_refinement": "open",
+  "external_proof_replayed_by_this_command": false,
+  "legacy_external_tcb": [
+    "rustc-8925ea358-source-to-mir",
+    "kani-0.68-transformation-and-rust-model",
+    "cbmc-6.11-cadical-result",
+    "host-process-filesystem-integrity",
+    "vm9-external-replay-checker-v1"
+  ],
+  "lab_tcb": [
+    "pinned lab pi0 Nat/Eq bootstrap and native checker",
+    "pinned lab reference checker (agreement is not metatheory)",
+    "SBCL/runtime/host and SHA256 byte-binding runner"
+  ],
+  "sbcl_binary_sha256": "9dd606aa1760cf6d940b0950982794a08ec085c255a8bfcca286276d39c4687b",
+  "envelope_sha256": "8de6d54d9df75dc7c47fd04dc63d92d86b314299145b5b84ca5b5a8173092840",
+  "runs": [
+    {
+      "mode": "produce",
+      "returncode": 0,
+      "log_sha256": "88974fd185da30f91eda98cd98321f99ce3e5deb81baeb36eac2dbb3aefcd90f"
+    },
+    {
+      "mode": "restore",
+      "returncode": 0,
+      "log_sha256": "5895d79718b420516fe0ed58805c7b7b4a95cd11a66b34a87a4966ab23e24b9b"
+    }
+  ]
+}

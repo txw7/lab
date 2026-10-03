@@ -1,0 +1,71 @@
+{
+  "schema": "vm9-lab-native-domain-obligations.v1",
+  "authority": "advisory-unencoded-obligations",
+  "primary_target": "complete 9VM specification-to-implementation-to-runtime correspondence",
+  "kernel_primitive_extension_justified": false,
+  "existing_core": "pi0 Nat/Eq dependent Pi, lambda, application, let; no VM9 semantic declarations exist at pin",
+  "normative_sources": [
+    {
+      "repository": "txw7/egress-runtime",
+      "revision": "fff7e693323343326c2bdc79fda9da6bbcaa198c",
+      "path": "9VM/formal/VM9_CORE_V1.json",
+      "sha256": "94be33cf2718d0352fdf35c7898946adef1b61c1716b8a45d3e305a8f9a8769b"
+    },
+    {
+      "repository": "txw7/egress-runtime",
+      "revision": "fff7e693323343326c2bdc79fda9da6bbcaa198c",
+      "path": "9VM/specs/tla+/Vm9PhaseCore.tla",
+      "sha256": "aa1767f0745e741b04eff091bb3571eef1ae0e4720a8777061b8019eecea973d"
+    },
+    {
+      "repository": "txw7/egress-runtime",
+      "revision": "fff7e693323343326c2bdc79fda9da6bbcaa198c",
+      "path": "9VM/specs/tla+/Vm9DispatchBridge.tla",
+      "sha256": "9c06aa3b14ace3e80473f63a6788c2491c928892a383d5ca18da2b261f04daae"
+    }
+  ],
+  "obligations": [
+    {
+      "id": "VM9_CORE_V1.phase_order_strict",
+      "normative_predicate": "Vm9PhaseCore.StrictOrderInv",
+      "statement": "For every permitted tick trace, all recorded phases are a canonical prefix of 1..9; hence i<j implies phaseLog[i]<phaseLog[j].",
+      "native_status": "unencoded; no kernel certificate",
+      "missing_checked_definitions": [
+        "finite sequence and indexing semantics",
+        "phase enum encoding and canonical phase sequence",
+        "initial state and next transition",
+        "ordered-prefix predicate and trace reachability"
+      ],
+      "missing_core_proofs": [
+        "initial state satisfies ordered-prefix",
+        "next preserves ordered-prefix and length<=9",
+        "ordered-prefix implies StrictOrderInv",
+        "repaired TLA transition refines the core transition",
+        "actual run_tick loop, callbacks, aperture and error paths refine core trace"
+      ],
+      "available_external_evidence": "Verus Seq<int> prefix lemmas and exact phase-order helper proof; not whole run_tick proof or core proof export",
+      "counterexample_warning": "Original pinned TLA AppendPhase permits arbitrary phase/repetition; StrictOrderInv is false. A repaired model is a separately pinned candidate, not a proof of original model."
+    },
+    {
+      "id": "VM9_CORE_V1.dispatch_implies_authorize",
+      "normative_predicate": "Vm9PhaseCore.DispatchImpliesAuthorizeInv",
+      "statement": "Reachable states satisfy dispatched>0 implies authorized>0; define whether counters mean hook reports or actual dispatch effects before refinement.",
+      "native_status": "unencoded; no kernel certificate",
+      "missing_checked_definitions": [
+        "authorization and dispatch state/counter semantics",
+        "P6/P7 actions and their rejection effects",
+        "D1-D6 dispatch-stage refinement and policy/witness checks",
+        "hook contracts and externally supplied counter relation"
+      ],
+      "missing_core_proofs": [
+        "initial authorization implication",
+        "every enabled next transition preserves the implication",
+        "dispatch effect requires successful authorization of the same intent/state",
+        "Rust hook, adapter, kernel and rejection paths refine these actions"
+      ],
+      "available_external_evidence": "Phase-order/phase-code helper proofs do not prove this invariant. Existing TLA counter rule is a model only.",
+      "counterexample_warning": "Independent arbitrary on_authorize/on_dispatch hooks require explicit admissibility contracts; no counterexample execution is asserted by this artifact."
+    }
+  ],
+  "closure_rule": "Encode and prove each actual claim with existing core terms or retain its residual; external success flags never discharge these obligations."
+}

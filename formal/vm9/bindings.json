@@ -1,0 +1,66 @@
+{
+  "schema": "vm9-lab-input-binding.v1",
+  "authority": "abstract-phase-model-only",
+  "runtime_revision": "fff7e693323343326c2bdc79fda9da6bbcaa198c",
+  "legacy_candidate_ref": "sha256:251903a5b5f24ae1b663bd640ce8912a0422237b253655ffcccd1dc695034613",
+  "legacy_subject": "original ReactorVm P1/P2 configured aperture, separate from edited helper candidate",
+  "edited_subject": "separately frozen ReactorVm helper/Verus/TLC/Kani tranche; full root refinement open",
+  "abstract_projection_digests": {
+    "model_scope": "vm9.phase-progress-projection.v1",
+    "state_schema_sha256": "398e64f517d7fd39652f6cea71ef01f1ee134070de21769b1b970672a5feab06",
+    "transition_relation_sha256": "c15971591c523546feb53bb96ee6f5ac8f4a85656bfcdcf2c3b07504ea7ac52b",
+    "theorem_set_sha256": "1fe7c30293535c79b169a13685471d6ee919fa138898023ba313377768e4f916",
+    "model_document_sha256": "64ed7f28ee3a53754c073dab6df8fe050608380181a89a9635642cd85af131ae",
+    "proof_terms_source_sha256": "b3ecd7d820342f96b53c76396cb3dbfc2c848170c42aa139e566016e762f2971",
+    "correspondence_manifest_sha256": null,
+    "reactor_schema_sha256": null,
+    "independent_external_certificate_sha256": null
+  },
+  "external_tcb": [
+    "rustc-8925ea358-source-to-mir",
+    "kani-0.68-transformation-and-rust-model",
+    "cbmc-6.11-cadical-result",
+    "host-process-filesystem-integrity",
+    "vm9-external-replay-checker-v1"
+  ],
+  "files": [
+    {
+      "root": "phase12",
+      "path": "evidence/admission/candidate.json",
+      "role": "legacy-kani-candidate",
+      "sha256": "a449b019b0ffc049cc9d9e3b333b6d79f4310e5b6f745ab6065b058bbb0079bb"
+    },
+    {
+      "root": "phase12",
+      "path": "admission/pins.json",
+      "role": "legacy-pins",
+      "sha256": "9db1792f16ed760369c18cc4a79418d505a5a1d2869510e02990d86c96c68fbc"
+    },
+    {
+      "root": "phase12",
+      "path": "admission/vm9-domain.lisp",
+      "role": "legacy-conditional-owner-extension",
+      "sha256": "e502ee2228950a9a15abd40c62d7d20a955c9de034b1c70d9b358ee0888003e6"
+    },
+    {
+      "root": "phase12",
+      "path": "admission/normative/9VM/formal/VM9_CORE_V1.json",
+      "role": "normative-contract",
+      "sha256": "94be33cf2718d0352fdf35c7898946adef1b61c1716b8a45d3e305a8f9a8769b"
+    },
+    {
+      "root": "phase12",
+      "path": "admission/normative/9VM/specs/tla+/Vm9PhaseCore.tla",
+      "role": "original-temporal-model",
+      "sha256": "aa1767f0745e741b04eff091bb3571eef1ae0e4720a8777061b8019eecea973d"
+    },
+    {
+      "root": "spec-verus",
+      "path": "evidence/ACCEPTANCE.json",
+      "role": "partial-source-refinement-receipt",
+      "sha256": "99a18478722830f65665c2dda19e1d2772e0dab8309fab406a28e7f0bf4ff5b8"
+    }
+  ],
+  "external_proof_processes_run_by_native_replay": false,
+  "full_vm9_formal_closure": false
+}

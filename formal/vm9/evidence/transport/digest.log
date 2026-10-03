@@ -1,0 +1,207 @@
+
+; file: /workspace/shared/vm9-lab-closure/formal/vm9/../../owners/lab/formal/checker-implementation.lisp
+; in: DEFUN MAKE-KERNEL-FAMILY-INGESTED-ALGORITHM
+;     (LIST :FRAGMENT :MINI-KERNEL-FROZEN-CORE :CONFIG-DIGEST
+;           MINI-KERNEL::*CURRENT-CONFIG-DIGEST*)
+; 
+; caught WARNING:
+;   undefined variable: MINI-KERNEL::*CURRENT-CONFIG-DIGEST*
+; 
+; compilation unit finished
+;   Undefined functions:
+;     INGEST-DECLARATIVECORE-DEF-PROGRAM INGEST-MINI-KERNEL-WHNF-PROGRAM LEAN-DEF-PROGRAM-SOURCE-DIGEST LEAN-DEF-PROGRAM-SOURCE-PATH LOWER-INGESTED-LEAN-DEF-PROGRAM-TO-DEFIR MERGE-DEFIR-PROGRAMS VALIDATE-LEAN-DEF-PROGRAM
+;   Undefined variable:
+;     *CURRENT-CONFIG-DIGEST*
+;   caught 1 WARNING condition
+Unhandled K::KERNEL-ERROR in thread #<SB-THREAD:THREAD tid=11 "main thread" RUNNING
+                                       {1003F90273}>:
+  certificate environment digest mismatch
+expected: (:VM9-FULL-ENVIRONMENT-V1 "50b9430f0ef8c62caa0ef37d9cf54b942534a612"
+           ((K::ADD :DEF
+             (:PI (:CONST K::NAT NIL)
+              (:PI (:CONST K::NAT NIL) (:CONST K::NAT NIL)))
+             (:LAM (:CONST K::NAT NIL)
+              (:LAM (:CONST K::NAT NIL)
+               (:APP
+                (:APP
+                 (:APP
+                  (:APP (:CONST K::NAT-REC NIL)
+                   (:LAM (:CONST K::NAT NIL) (:CONST K::NAT NIL)))
+                  (:VAR 0))
+                 (:LAM (:CONST K::NAT NIL)
+                  (:LAM (:CONST K::NAT NIL)
+                   (:APP (:CONST K::SUCC NIL) (:VAR 0)))))
+                (:VAR 1))))
+             T)
+            (CURSOR-SUCC-CONGRUENCE :DEF
+             (:PI (:CONST K::NAT NIL)
+              (:PI (:CONST K::NAT NIL)
+               (:PI
+                (:APP
+                 (:APP (:APP (:CONST EQ NIL) (:CONST K::NAT NIL)) (:VAR 1))
+                 (:VAR 0))
+                (:APP
+                 (:APP (:APP (:CONST EQ NIL) (:CONST K::NAT NIL))
+                  (:APP (:CONST K::SUCC NIL) (:VAR 2)))
+                 (:APP (:CONST K::SUCC NIL) (:VAR 1))))))
+             (:LAM (:CONST K::NAT NIL)
+              (:LAM (:CONST K::NAT NIL)
+               (:LAM
+                (:APP
+                 (:APP (:APP (:CONST EQ NIL) (:CONST K::NAT NIL)) (:VAR 1))
+                 (:VAR 0))
+                (:APP
+                 (:APP
+                  (:APP
+                   (:APP
+                    (:APP (:APP (:CONST K::EQ-REC NIL) (:CONST K::NAT NIL))
+                     (:VAR 2))
+                    (:LAM (:CONST K::NAT NIL)
+                     (:LAM
+                      (:APP
+                       (:APP (:APP (:CONST EQ NIL) (:CONST K::NAT NIL))
+                        (:VAR 3))
+                       (:VAR 0))
+                      (:APP
+                       (:APP (:APP (:CONST EQ NIL) (:CONST K::NAT NIL))
+                        (:APP (:CONST K::SUCC NIL) (:VAR 4)))
+                       (:APP (:CONST K::SUCC NIL) (:VAR 1))))))
+                   (:APP (:APP (:CONST K::REFL NIL) (:CONST K::NAT NIL))
+                    (:APP (:CONST K::SUCC NIL) (:VAR 2))))
+                  (:VAR 1))
+                 (:VAR 0)))))
+             T)
+            (EQ :AXIOM (:PI (:SORT 0) (:PI (:VAR 0) (:PI (:VAR 1) (:SORT 0))))
+                NIL NIL)
+            (K::EQ-REC :AXIOM
+             (:PI (:SORT 0)
+              (:PI (:VAR 0)
+               (:PI
+                (:PI (:VAR 1)
+                 (:PI
+                  (:APP (:APP (:APP (:CONST EQ NIL) (:VAR 2)) (:VAR 1))
+                   (:VAR 0))
+                  (:SORT 0)))
+                (:PI
+                 (:APP (:APP (:VAR 0) (:VAR 1))
+                  (:APP (:APP (:CONST K::REFL NIL) (:VAR 2)) (:VAR 1)))
+                 (:PI (:VAR 3)
+                  (:PI
+                   (:APP (:APP (:APP (:CONST EQ NIL) (:VAR 4)) (:VAR 3))
+                    (:VAR 0))
+                   (:APP (:APP (:VAR 3) (:VAR 1)) (:VAR 0))))))))
+             NIL NIL)
+            (K::NAT :AXIOM (:SORT 0) NIL NIL)
+            (K::NAT-REC :AXIOM
+             (:PI (:PI (:CONST K::NAT NIL) (:SORT 0))
+              (:PI (:APP (:VAR 0) (:CONST K::ZERO NIL))
+               (:PI
+                (:PI (:CONST K::NAT NIL)
+                 (:PI (:APP (:VAR 2) (:VAR 0))
+                  (:APP (:VAR 3) (:APP (:CONST K::SUCC NIL) (:VAR 1)))))
+                (:PI (:CONST K::NAT NIL) (:APP (:VAR 3) (:VAR 0))))))
+             NIL NIL)
+            (PHASE-BUDGET :DEF
+             (:PI (:CONST K::NAT NIL) (:PI (:CONST K::NAT NIL) (:SORT 0)))
+             (:LAM (:CONST K::NAT NIL)
+              (:LAM (:CONST K::NAT NIL)
+               (:APP
+                (:APP (:APP (:CONST EQ NIL) (:CONST K::NAT NIL))
+                 (:APP (:APP (:CONST K::ADD NIL) (:VAR 1)) (:VAR 0)))
+                (:APP (:CONST K::SUCC NIL)
+                 (:APP (:CONST K::SUCC NIL)
+                  (:APP (:CONST K::SUCC NIL)
+                   (:APP (:CONST K::SUCC NIL)
+                    (:APP (:CONST K::SUCC NIL)
+                     (:APP (:CONST K::SUCC NIL)
+                      (:APP (:CONST K::SUCC NIL)
+                       (:APP (:CONST K::SUCC NIL)
+                        (:APP (:CONST K::SUCC NIL)
+                         (:CONST K::ZERO NIL)))))))))))))
+             T)
+            (PHASE-SHIFT-LAW :DEF
+             (:PI (:CONST K::NAT NIL)
+              (:PI (:CONST K::NAT NIL)
+               (:APP
+                (:APP (:APP (:CONST EQ NIL) (:CONST K::NAT NIL))
+                 (:APP (:APP (:CONST K::ADD NIL) (:VAR 1))
+                  (:APP (:CONST K::SUCC NIL) (:VAR 0))))
+                (:APP (:CONST K::SUCC NIL)
+                 (:APP (:APP (:CONST K::ADD NIL) (:VAR 1)) (:VAR 0))))))
+             (:APP
+              (:APP
+               (:APP (:CONST K::NAT-REC NIL)
+                (:LAM (:CONST K::NAT NIL)
+                 (:PI (:CONST K::NAT NIL)
+                  (:APP
+                   (:APP (:APP (:CONST EQ NIL) (:CONST K::NAT NIL))
+                    (:APP (:APP (:CONST K::ADD NIL) (:VAR 1))
+                     (:APP (:CONST K::SUCC NIL) (:VAR 0))))
+                   (:APP (:CONST K::SUCC NIL)
+                    (:APP (:APP (:CONST K::ADD NIL) (:VAR 1)) (:VAR 0)))))))
+               (:LAM (:CONST K::NAT NIL)
+                (:APP (:APP (:CONST K::REFL NIL) (:CONST K::NAT NIL))
+                 (:APP (:CONST K::SUCC NIL) (:VAR 0)))))
+              (:LAM (:CONST K::NAT NIL)
+               (:LAM
+                (:PI (:CONST K::NAT NIL)
+                 (:APP
+                  (:APP (:APP (:CONST EQ NIL) (:CONST K::NAT NIL))
+                   (:APP (:APP (:CONST K::ADD NIL) (:VAR 1))
+                    (:APP (:CONST K::SUCC NIL) (:VAR 0))))
+                  (:APP (:CONST K::SUCC NIL)
+                   (:APP (:APP (:CONST K::ADD NIL) (:VAR 1)) (:VAR 0)))))
+                (:LAM (:CONST K::NAT NIL)
+                 (:APP
+                  (:APP
+                   (:APP (:CONST CURSOR-SUCC-CONGRUENCE NIL)
+                    (:APP (:APP (:CONST K::ADD NIL) (:VAR 2))
+                     (:APP (:CONST K::SUCC NIL) (:VAR 0))))
+                   (:APP (:CONST K::SUCC NIL)
+                    (:APP (:APP (:CONST K::ADD NIL) (:VAR 2)) (:VAR 0))))
+                  (:APP (:VAR 1) (:VAR 0)))))))
+             T)
+            (K::REFL :AXIOM
+             (:PI (:SORT 0)
+              (:PI (:VAR 0)
+               (:APP (:APP (:APP (:CONST EQ NIL) (:VAR 1)) (:VAR 0))
+                (:VAR 0))))
+             NIL NIL)
+            (K::SUCC :AXIOM (:PI (:CONST K::NAT NIL) (:CONST K::NAT NIL)) NIL
+             NIL)
+            (K::ZERO :AXIOM (:CONST K::NAT NIL) NIL NIL)))
+actual:   :WRONG-ENVIRONMENT
+
+Backtrace for: #<SB-THREAD:THREAD tid=11 "main thread" RUNNING {1003F90273}>
+0: (SB-DEBUG::DEBUGGER-DISABLED-HOOK #<K::KERNEL-ERROR {10021D1A73}> #<unused argument> :QUIT T)
+1: (SB-DEBUG::RUN-HOOK SB-EXT:*INVOKE-DEBUGGER-HOOK* #<K::KERNEL-ERROR {10021D1A73}>)
+2: (INVOKE-DEBUGGER #<K::KERNEL-ERROR {10021D1A73}>)
+3: (ERROR K::KERNEL-ERROR :MESSAGE #<(SIMPLE-BASE-STRING 6736) certificate environment digest mismatch
+expected: (:VM9-FULL-ENVIRONMENT-V1 "50b9430f0ef8c62caa0ef37d9cf54b942534a612"
+           ((K::ADD :DEF
+             (:PI (:CONST K::NAT NIL)
+              (:PI... {10021D000F}>)
+4: (K::KERNEL-ERROR "certificate environment digest mismatch~%expected: ~S~%actual:   ~S" (:VM9-FULL-ENVIRONMENT-V1 "50b9430f0ef8c62caa0ef37d9cf54b942534a612" ((K::ADD :DEF (:PI #1=(:CONST K::NAT NIL) (:PI #1# #1#)) (:LAM #2=(:CONST K::NAT NIL) (:LAM #2# #)) T) (CURSOR-SUCC-CONGRUENCE :DEF (:PI (:CONST K::NAT NIL) (:PI # #)) (:LAM (:CONST K::NAT NIL) (:LAM # #)) T) (EQ :AXIOM (:PI (:SORT 0) (:PI # #)) NIL NIL) (K::EQ-REC :AXIOM (:PI (:SORT 0) (:PI # #)) NIL NIL) (K::NAT :AXIOM (:SORT 0) NIL NIL) (K::NAT-REC :AXIOM (:PI (:PI # #) (:PI # #)) NIL NIL) (PHASE-BUDGET :DEF (:PI (:CONST K::NAT NIL) (:PI # #)) (:LAM (:CONST K::NAT NIL) (:LAM # #)) T) (PHASE-SHIFT-LAW :DEF (:PI (:CONST K::NAT NIL) (:PI # #)) (:APP (:APP # #) (:LAM # #)) T) (K::REFL :AXIOM (:PI (:SORT 0) (:PI # #)) NIL NIL) (K::SUCC :AXIOM (:PI (:CONST K::NAT NIL) (:CONST K::NAT NIL)) NIL NIL) (K::ZERO :AXIOM (:CONST K::NAT NIL) NIL NIL))) :WRONG-ENVIRONMENT)
+5: (K:CHECK-CERTIFICATE #<HASH-TABLE :TEST EQ :COUNT 11 {1002143663}> #S(K:CERTIFICATE :SCHEMA-VERSION 1 :JUDGMENT-KIND :TYPING :CONTEXT NIL :TERM (:APP (:APP (:CONST K::REFL NIL) (:CONST K::NAT NIL)) (:APP (:CONST K::SUCC NIL) (:APP (:CONST K::SUCC NIL) (:APP # #)))) :TYPE (:APP (:APP (:CONST PHASE-BUDGET NIL) (:CONST K::ZERO NIL)) (:APP (:CONST K::SUCC NIL) (:APP (:CONST K::SUCC NIL) (:APP # #)))) :ENV-DIGEST :WRONG-ENVIRONMENT :CONFIG-DIGEST (:CONFIG-ID :PI0 :UNIVERSE-POLICY :MONOMORPHIC :CONVERSION :WHNF-STRUCTURAL :INDUCTIVES (:NAT :EQ) :LEVELS :IDENTITY) :CHECKER-IDS NIL :METADATA NIL) :EXPECTED-ENV-DIGEST (:VM9-FULL-ENVIRONMENT-V1 "50b9430f0ef8c62caa0ef37d9cf54b942534a612" ((K::ADD :DEF (:PI #1=(:CONST K::NAT NIL) (:PI #1# #1#)) (:LAM #2=(:CONST K::NAT NIL) (:LAM #2# #)) T) (CURSOR-SUCC-CONGRUENCE :DEF (:PI (:CONST K::NAT NIL) (:PI # #)) (:LAM (:CONST K::NAT NIL) (:LAM # #)) T) (EQ :AXIOM (:PI (:SORT 0) (:PI # #)) NIL NIL) (K::EQ-REC :AXIOM (:PI (:SORT 0) (:PI # #)) NIL NIL) (K::NAT :AXIOM (:SORT 0) NIL NIL) (K::NAT-REC :AXIOM (:PI (:PI # #) (:PI # #)) NIL NIL) (PHASE-BUDGET :DEF (:PI (:CONST K::NAT NIL) (:PI # #)) (:LAM (:CONST K::NAT NIL) (:LAM # #)) T) (PHASE-SHIFT-LAW :DEF (:PI (:CONST K::NAT NIL) (:PI # #)) (:APP (:APP # #) (:LAM # #)) T) (K::REFL :AXIOM (:PI (:SORT 0) (:PI # #)) NIL NIL) (K::SUCC :AXIOM (:PI (:CONST K::NAT NIL) (:CONST K::NAT NIL)) NIL NIL) (K::ZERO :AXIOM (:CONST K::NAT NIL) NIL NIL))) :CHECKER-IMPLEMENTATION #S(K:KERNEL-IMPLEMENTATION :ID :NATIVE :SHIFT #<FUNCTION K::%NATIVE-SHIFT> :SUBST #<FUNCTION K::%NATIVE-SUBST> :SUBST-TOP #<FUNCTION K::%NATIVE-SUBST-TOP> :CTX-LOOKUP #<FUNCTION K::%NATIVE-CTX-LOOKUP> :WHNF #<FUNCTION K::%NATIVE-WHNF> :CONV #<FUNCTION K::%NATIVE-CONV?> :INFER #<FUNCTION K::%NATIVE-INFER> :CHECK #<FUNCTION K::%NATIVE-CHECK> :METADATA (:ORIGIN K::NATIVE)))
+6: (CHECK-CLOSED-CERTIFICATE #<HASH-TABLE :TEST EQ :COUNT 11 {1002143663}> #S(K:CERTIFICATE :SCHEMA-VERSION 1 :JUDGMENT-KIND :TYPING :CONTEXT NIL :TERM (:APP (:APP (:CONST K::REFL NIL) (:CONST K::NAT NIL)) (:APP (:CONST K::SUCC NIL) (:APP (:CONST K::SUCC NIL) (:APP # #)))) :TYPE (:APP (:APP (:CONST PHASE-BUDGET NIL) (:CONST K::ZERO NIL)) (:APP (:CONST K::SUCC NIL) (:APP (:CONST K::SUCC NIL) (:APP # #)))) :ENV-DIGEST :WRONG-ENVIRONMENT :CONFIG-DIGEST (:CONFIG-ID :PI0 :UNIVERSE-POLICY :MONOMORPHIC :CONVERSION :WHNF-STRUCTURAL :INDUCTIVES (:NAT :EQ) :LEVELS :IDENTITY) :CHECKER-IDS NIL :METADATA NIL))
+7: (RECHECK-ENVELOPE #S(REFINEMENT-ENVELOPE :SCHEMA :VM9-LAB-REFINEMENT-V1 :INPUTS (:SOURCE-REF "txw7/egress-runtime@fff7e693323343326c2bdc79fda9da6bbcaa198c" :EVIDENCE-REF "sha256:251903a5b5f24ae1b663bd640ce8912a0422237b253655ffcccd1dc695034613" :BINDING-SHA256 "99c9c2a14fa7df3fb13e85d7ebd7ea6635f5bf4f680a38f6541e55bcf9b089b5") :MODEL-CERTIFICATES (#S(K:CERTIFICATE :SCHEMA-VERSION 1 :JUDGMENT-KIND :TYPING :CONTEXT NIL :TERM (:APP (:APP # #) (:APP # #)) :TYPE (:APP (:APP # #) (:APP # #)) :ENV-DIGEST :WRONG-ENVIRONMENT :CONFIG-DIGEST (:CONFIG-ID :PI0 :UNIVERSE-POLICY :MONOMORPHIC :CONVERSION :WHNF-STRUCTURAL :INDUCTIVES (:NAT :EQ) :LEVELS :IDENTITY) :CHECKER-IDS NIL :METADATA NIL) #S(K:CERTIFICATE :SCHEMA-VERSION 1 :JUDGMENT-KIND :TYPING :CONTEXT NIL :TERM (:LAM (:CONST K::NAT NIL) (:LAM # #)) :TYPE (:PI (:CONST K::NAT NIL) (:PI # #)) :ENV-DIGEST (:VM9-FULL-ENVIRONMENT-V1 "50b9430f0ef8c62caa0ef37d9cf54b942534a612" (# # # # # # # # # # #)) :CONFIG-DIGEST (:CONFIG-ID :PI0 :UNIVERSE-POLICY :MONOMORPHIC :CONVERSION :WHNF-STRUCTURAL :INDUCTIVES (:NAT :EQ) :LEVELS :IDENTITY) :CHECKER-IDS NIL :METADATA NIL)) :RESIDUALS (#S(RESIDUAL-OBLIGATION :KIND :NORMATIVE-TO-CORE :SOURCE-REF "txw7/egress-runtime@fff7e693323343326c2bdc79fda9da6bbcaa198c" :TARGET "TLA/VM9 contracts refine this Nat cursor model" :EVIDENCE-REF "sha256:251903a5b5f24ae1b663bd640ce8912a0422237b253655ffcccd1dc695034613" :ASSUMPTIONS ("rustc-8925ea358-source-to-mir" "kani-0.68-transformation-and-rust-model" "cbmc-6.11-cadical-result" "host-process-filesystem-integrity" "vm9-external-replay-checker-v1") :STATUS :OPEN) #S(RESIDUAL-OBLIGATION :KIND :RUST-TO-CORE :SOURCE-REF "txw7/egress-runtime@fff7e693323343326c2bdc79fda9da6bbcaa198c" :TARGET "actual run_tick and all state owners refine core model" :EVIDENCE-REF "sha256:251903a5b5f24ae1b663bd640ce8912a0422237b253655ffcccd1dc695034613" :ASSUMPTIONS ("rustc-8925ea358-source-to-mir" "kani-0.68-transformation-and-rust-model" "cbmc-6.11-cadical-result" "host-process-filesystem-integrity" "vm9-external-replay-checker-v1") :STATUS :OPEN) #S(RESIDUAL-OBLIGATION :KIND :VERUS-TO-CORE :SOURCE-REF "txw7/egress-runtime@fff7e693323343326c2bdc79fda9da6bbcaa198c" :TARGET "Verus proof and extraction map reify to core certificates" :EVIDENCE-REF "sha256:251903a5b5f24ae1b663bd640ce8912a0422237b253655ffcccd1dc695034613" :ASSUMPTIONS ("rustc-8925ea358-source-to-mir" "kani-0.68-transformation-and-rust-model" "cbmc-6.11-cadical-result" "host-process-filesystem-integrity" "vm9-external-replay-checker-v1") :STATUS :OPEN) #S(RESIDUAL-OBLIGATION :KIND :KANI-TO-CORE :SOURCE-REF "txw7/egress-runtime@fff7e693323343326c2bdc79fda9da6bbcaa198c" :TARGET "bounded Kani result reifies to core certificates" :EVIDENCE-REF "sha256:251903a5b5f24ae1b663bd640ce8912a0422237b253655ffcccd1dc695034613" :ASSUMPTIONS ("rustc-8925ea358-source-to-mir" "kani-0.68-transformation-and-rust-model" "cbmc-6.11-cadical-result" "host-process-filesystem-integrity" "vm9-external-replay-checker-v1") :STATUS :OPEN) #S(RESIDUAL-OBLIGATION :KIND :WHOLE-VM-COMPOSITION :SOURCE-REF "txw7/egress-runtime@fff7e693323343326c2bdc79fda9da6bbcaa198c" :TARGET "all VM9 phases/contracts/configurations compose" :EVIDENCE-REF "sha256:251903a5b5f24ae1b663bd640ce8912a0422237b253655ffcccd1dc695034613" :ASSUMPTIONS ("rustc-8925ea358-source-to-mir" "kani-0.68-transformation-and-rust-model" "cbmc-6.11-cadical-result" "host-process-filesystem-integrity" "vm9-external-replay-checker-v1") :STATUS :OPEN) #S(RESIDUAL-OBLIGATION :KIND :SOURCE-TO-RUNTIME :SOURCE-REF "txw7/egress-runtime@fff7e693323343326c2bdc79fda9da6bbcaa198c" :TARGET "compiler/ABI/binary/host execution refines source" :EVIDENCE-REF "sha256:251903a5b5f24ae1b663bd640ce8912a0422237b253655ffcccd1dc695034613" :ASSUMPTIONS ("rustc-8925ea358-source-to-mir" "kani-0.68-transformation-and-rust-model" "cbmc-6.11-cadical-result" "host-process-filesystem-integrity" "vm9-external-replay-checker-v1") :STATUS :OPEN) #S(RESIDUAL-OBLIGATION :KIND :SOURCE-MUTATION-COVERAGE :SOURCE-REF "txw7/egress-runtime@fff7e693323343326c2bdc79fda9da6bbcaa198c" :TARGET "every authoritative source mutation and boundary has a semantic mapping" :EVIDENCE-REF "sha256:251903a5b5f24ae1b663bd640ce8912a0422237b253655ffcccd1dc695034613" :ASSUMPTIONS ("rustc-8925ea358-source-to-mir" "kani-0.68-transformation-and-rust-model" "cbmc-6.11-cadical-result" "host-process-filesystem-integrity" "vm9-external-replay-checker-v1") :STATUS :OPEN) #S(RESIDUAL-OBLIGATION :KIND :RECURSIVE-CORRESPONDENCE :SOURCE-REF "txw7/egress-runtime@fff7e693323343326c2bdc79fda9da6bbcaa198c" :TARGET "H001/H002 and Goggles recursive reactor retain reversible source correspondence" :EVIDENCE-REF "sha256:251903a5b5f24ae1b663bd640ce8912a0422237b253655ffcccd1dc695034613" :ASSUMPTIONS ("rustc-8925ea358-source-to-mir" "kani-0.68-transformation-and-rust-model" "cbmc-6.11-cadical-result" "host-process-filesystem-integrity" "vm9-external-replay-checker-v1") :STATUS :OPEN) #S(RESIDUAL-OBLIGATION :KIND :INDEPENDENT-EXTERNAL-PROOF :SOURCE-REF "txw7/egress-runtime@fff7e693323343326c2bdc79fda9da6bbcaa198c" :TARGET "independent Lean/Isabelle semantics and refinement proof binds the same subject" :EVIDENCE-REF "sha256:251903a5b5f24ae1b663bd640ce8912a0422237b253655ffcccd1dc695034613" :ASSUMPTIONS ("rustc-8925ea358-source-to-mir" "kani-0.68-transformation-and-rust-model" "cbmc-6.11-cadical-result" "host-process-filesystem-integrity" "vm9-external-replay-checker-v1") :STATUS :OPEN) #S(RESIDUAL-OBLIGATION :KIND :CHILD-INTERFACE-TCB :SOURCE-REF "txw7/egress-runtime@fff7e693323343326c2bdc79fda9da6bbcaa198c" :TARGET "every child authority has a proof/interface contract or explicit TCB identity" :EVIDENCE-REF "sha256:251903a5b5f24ae1b663bd640ce8912a0422237b253655ffcccd1dc695034613" :ASSUMPTIONS ("rustc-8925ea358-source-to-mir" "kani-0.68-transformation-and-rust-model" "cbmc-6.11-cadical-result" "host-process-filesystem-integrity" "vm9-external-replay-checker-v1") :STATUS :OPEN) #S(RESIDUAL-OBLIGATION :KIND :DURABILITY-REPLAY :SOURCE-REF "txw7/egress-runtime@fff7e693323343326c2bdc79fda9da6bbcaa198c" :TARGET "restart/crash/concurrency/reconciliation preserve logical effect identity" :EVIDENCE-REF "sha256:251903a5b5f24ae1b663bd640ce8912a0422237b253655ffcccd1dc695034613" :ASSUMPTIONS ("rustc-8925ea358-source-to-mir" "kani-0.68-transformation-and-rust-model" "cbmc-6.11-cadical-result" "host-process-filesystem-integrity" "vm9-external-replay-checker-v1") :STATUS :OPEN) #S(RESIDUAL-OBLIGATION :KIND :DIGEST-CONVERGENCE :SOURCE-REF "txw7/egress-runtime@fff7e693323343326c2bdc79fda9da6bbcaa198c" :TARGET "internal/external state, transition, reactor, theorem and correspondence digests agree" :EVIDENCE-REF "sha256:251903a5b5f24ae1b663bd640ce8912a0422237b253655ffcccd1dc695034613" :ASSUMPTIONS ("rustc-8925ea358-source-to-mir" "kani-0.68-transformation-and-rust-model" "cbmc-6.11-cadical-result" "host-process-filesystem-integrity" "vm9-external-replay-checker-v1") :STATUS :OPEN) ...) :AUTHORITY :ABSTRACT-PHASE-MODEL-ONLY) (:SOURCE-REF "txw7/egress-runtime@fff7e693323343326c2bdc79fda9da6bbcaa198c" :EVIDENCE-REF "sha256:251903a5b5f24ae1b663bd640ce8912a0422237b253655ffcccd1dc695034613" :BINDING-SHA256 "99c9c2a14fa7df3fb13e85d7ebd7ea6635f5bf4f680a38f6541e55bcf9b089b5"))
+8: ((LAMBDA NIL :IN "/workspace/shared/vm9-lab-closure/formal/vm9/run.lisp"))
+9: (SB-INT:SIMPLE-EVAL-IN-LEXENV (LET* ((INPUTS (LIST :SOURCE-REF (OR # #) :EVIDENCE-REF (OR # #) :BINDING-SHA256 (OR # #))) (PATH (OR (UIOP/OS:GETENV "VM9_ENVELOPE") (FAIL "missing envelope path"))) (MODE (OR (UIOP/OS:GETENV "VM9_MODE") (FAIL "missing mode"))) (CANDIDATE (COND (# #) (# #) (T #)))) (RECHECK-ENVELOPE CANDIDATE INPUTS) (WHEN (STRING= MODE "produce") (WRITE-ENVELOPE PATH CANDIDATE)) (FORMAT T "VM9 LAB PHASE MODEL ACCEPTED: 2 native, 2 reference, 13 residual OPEN; ~A~%" MODE)) #<NULL-LEXENV>)
+10: (SB-EXT:EVAL-TLF (LET* ((INPUTS (LIST :SOURCE-REF (OR # #) :EVIDENCE-REF (OR # #) :BINDING-SHA256 (OR # #))) (PATH (OR (UIOP/OS:GETENV "VM9_ENVELOPE") (FAIL "missing envelope path"))) (MODE (OR (UIOP/OS:GETENV "VM9_MODE") (FAIL "missing mode"))) (CANDIDATE (COND (# #) (# #) (T #)))) (RECHECK-ENVELOPE CANDIDATE INPUTS) (WHEN (STRING= MODE "produce") (WRITE-ENVELOPE PATH CANDIDATE)) (FORMAT T "VM9 LAB PHASE MODEL ACCEPTED: 2 native, 2 reference, 13 residual OPEN; ~A~%" MODE)) 4 NIL)
+11: ((LABELS SB-FASL::EVAL-FORM :IN SB-INT:LOAD-AS-SOURCE) (LET* ((INPUTS (LIST :SOURCE-REF (OR # #) :EVIDENCE-REF (OR # #) :BINDING-SHA256 (OR # #))) (PATH (OR (UIOP/OS:GETENV "VM9_ENVELOPE") (FAIL "missing envelope path"))) (MODE (OR (UIOP/OS:GETENV "VM9_MODE") (FAIL "missing mode"))) (CANDIDATE (COND (# #) (# #) (T #)))) (RECHECK-ENVELOPE CANDIDATE INPUTS) (WHEN (STRING= MODE "produce") (WRITE-ENVELOPE PATH CANDIDATE)) (FORMAT T "VM9 LAB PHASE MODEL ACCEPTED: 2 native, 2 reference, 13 residual OPEN; ~A~%" MODE)) 4)
+12: ((LAMBDA (SB-KERNEL:FORM &KEY :CURRENT-INDEX &ALLOW-OTHER-KEYS) :IN SB-INT:LOAD-AS-SOURCE) (LET* ((INPUTS (LIST :SOURCE-REF (OR # #) :EVIDENCE-REF (OR # #) :BINDING-SHA256 (OR # #))) (PATH (OR (UIOP/OS:GETENV "VM9_ENVELOPE") (FAIL "missing envelope path"))) (MODE (OR (UIOP/OS:GETENV "VM9_MODE") (FAIL "missing mode"))) (CANDIDATE (COND (# #) (# #) (T #)))) (RECHECK-ENVELOPE CANDIDATE INPUTS) (WHEN (STRING= MODE "produce") (WRITE-ENVELOPE PATH CANDIDATE)) (FORMAT T "VM9 LAB PHASE MODEL ACCEPTED: 2 native, 2 reference, 13 residual OPEN; ~A~%" MODE)) :CURRENT-INDEX 4)
+13: (SB-C::%DO-FORMS-FROM-INFO #<FUNCTION (LAMBDA (SB-KERNEL:FORM &KEY :CURRENT-INDEX &ALLOW-OTHER-KEYS) :IN SB-INT:LOAD-AS-SOURCE) {7F5370B273DB}> #<SB-C::SOURCE-INFO {1000B95C53}> SB-C::INPUT-ERROR-IN-LOAD)
+14: (SB-INT:LOAD-AS-SOURCE #<SB-SYS:FD-STREAM for "file /workspace/shared/vm9-lab-closure/formal/vm9/run.lisp" {1000032323}> :VERBOSE NIL :PRINT NIL :CONTEXT "loading")
+15: ((LABELS SB-FASL::LOAD-STREAM-1 :IN LOAD) #<SB-SYS:FD-STREAM for "file /workspace/shared/vm9-lab-closure/formal/vm9/run.lisp" {1000032323}> NIL)
+16: (SB-FASL::CALL-WITH-LOAD-BINDINGS #<FUNCTION (LABELS SB-FASL::LOAD-STREAM-1 :IN LOAD) {7F5370B2779B}> #<SB-SYS:FD-STREAM for "file /workspace/shared/vm9-lab-closure/formal/vm9/run.lisp" {1000032323}> NIL #<SB-SYS:FD-STREAM for "file /workspace/shared/vm9-lab-closure/formal/vm9/run.lisp" {1000032323}>)
+17: (LOAD #<SB-SYS:FD-STREAM for "file /workspace/shared/vm9-lab-closure/formal/vm9/run.lisp" {1000032323}> :VERBOSE NIL :PRINT NIL :IF-DOES-NOT-EXIST :ERROR :EXTERNAL-FORMAT :DEFAULT)
+18: ((FLET SB-IMPL::LOAD-SCRIPT :IN SB-IMPL::PROCESS-SCRIPT) #<SB-SYS:FD-STREAM for "file /workspace/shared/vm9-lab-closure/formal/vm9/run.lisp" {1000032323}>)
+19: ((FLET SB-UNIX::BODY :IN SB-IMPL::PROCESS-SCRIPT))
+20: ((FLET "WITHOUT-INTERRUPTS-BODY-" :IN SB-IMPL::PROCESS-SCRIPT))
+21: (SB-IMPL::PROCESS-SCRIPT "formal/vm9/run.lisp")
+22: (SB-IMPL::TOPLEVEL-INIT)
+23: ((FLET SB-UNIX::BODY :IN SB-IMPL::START-LISP))
+24: ((FLET "WITHOUT-INTERRUPTS-BODY-3" :IN SB-IMPL::START-LISP))
+25: (SB-IMPL::%START-LISP)
+
+unhandled condition in --disable-debugger mode, quitting

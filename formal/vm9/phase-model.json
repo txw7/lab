@@ -1,0 +1,58 @@
+{
+  "schema": "vm9.phase-progress-projection.v1",
+  "role": "abstract-phase-transition-model; not full VM9 state",
+  "arithmetic": "unbounded Nat; original lab pi0 Nat/Eq",
+  "state_components": [
+    {
+      "name": "cursor",
+      "type": "Nat",
+      "meaning": "completed phases in the current tick"
+    },
+    {
+      "name": "remaining",
+      "type": "Nat",
+      "meaning": "remaining phases in the current tick"
+    }
+  ],
+  "initial_state": {
+    "cursor": 0,
+    "remaining": 9
+  },
+  "next_relation": {
+    "rule": "For c,r:Nat, (c,succ(r)) transitions to (succ(c),r)",
+    "emitted_phase": "succ(c)",
+    "terminal_behavior": "No progress rule with zero remaining; stuttering is representation identity, not part of the two progress certificates"
+  },
+  "invariant": "phase-budget(c,r) := Eq Nat (add c r) 9",
+  "theorem_set": [
+    {
+      "id": "vm9-phase-budget-init",
+      "statement": "phase-budget(0,9)",
+      "proof": "refl Nat 9 under definitional reduction"
+    },
+    {
+      "id": "vm9-phase-budget-next-preserves",
+      "statement": "forall c,r:Nat, phase-budget(c,succ(r)) -> phase-budget(succ(c),r)",
+      "proof": "Nat induction establishes add(c,succ(r))=succ(add(c,r)); Eq recursor transports the old invariant"
+    }
+  ],
+  "checked_definitions": [
+    "cursor-succ-congruence",
+    "phase-budget",
+    "phase-shift-law"
+  ],
+  "reference_projection": {
+    "origin": "separately repaired Vm9PhaseCore.tla",
+    "candidate_relation": "cursor=Len(phaseLog); remaining=9-Len(phaseLog); emitted phase=cursor+1",
+    "status": "relation not proved; full sequence/order semantics absent from this core projection"
+  },
+  "unproved": [
+    "StrictOrderInv over actual recorded phaseLog",
+    "zero-versus-successor no-confusion/terminal impossibility theorem",
+    "authorization or dispatch behavior",
+    "source extraction and actual Rust loop refinement",
+    "equivalence of phase presentations and BoundaryPhaseEngine",
+    "runtime/compiler/durability behavior",
+    "independent Lean/Isabelle proof for the same schema"
+  ]
+}

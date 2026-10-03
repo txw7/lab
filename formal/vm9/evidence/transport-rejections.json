@@ -1,0 +1,35 @@
+{
+  "schema": "vm9-lab-transport-negative-tests.v1",
+  "cases": [
+    {
+      "mutation": "unproved",
+      "expected": "rejected",
+      "returncode": 1,
+      "log_sha256": "142b0621c868ec66c20af0390d9cb9829bb443ee5f0c3e60ec3ac0eb1ad8d0a9"
+    },
+    {
+      "mutation": "digest",
+      "expected": "rejected",
+      "returncode": 1,
+      "log_sha256": "4e8f323a80a4f7ffea2511a723297dfe5b2825bd3999e6802341495b8b34d9a4"
+    },
+    {
+      "mutation": "assumption",
+      "expected": "rejected",
+      "returncode": 1,
+      "log_sha256": "0049a089a9ce8df5510e2ce86f53532854bc283c6eefb1e8cfe9da4e4c9f3d68"
+    },
+    {
+      "mutation": "stale",
+      "expected": "rejected",
+      "returncode": 1,
+      "log_sha256": "1486c85d29f0a41fae34a7f35f0e69dbc2119059f395ed448bf761367d4c4de0"
+    },
+    {
+      "mutation": "authority",
+      "expected": "rejected",
+      "returncode": 1,
+      "log_sha256": "8c034f7dc72c899d8dc5005006efc98d45074217ba890aac180e62aeae557662"
+    }
+  ]
+}
