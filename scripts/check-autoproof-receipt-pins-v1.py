@@ -6,15 +6,50 @@ not run Lean, prove the fixture theorem, or validate content-addressed records.
 """
 
 import copy
+import hashlib
+import importlib
 import json
 import os
 from pathlib import Path
 import subprocess
+import sys
 import tempfile
+import types
 
 
 ROOT = Path(__file__).resolve().parents[1]
 RUNNER = ROOT / "scripts/run_autoproof_formal_discharge_v1.lisp"
+
+
+def content_id(record):
+    # These fixtures contain only ASCII JSON values. This is the exact subset
+    # of Research canonical.py (sorted compact UTF-8 JSON) exercised here.
+    body = {key: value for key, value in record.items() if key != "object_id"}
+    return "sha256:" + hashlib.sha256(json.dumps(
+        body, ensure_ascii=False, allow_nan=False, sort_keys=True, separators=(",", ":")
+    ).encode()).hexdigest()
+
+
+def reseal(request):
+    """Recompute every embedded identity without repairing deliberate bad links."""
+    obligation = request.get("formal_obligation")
+    if not isinstance(obligation, dict):
+        return request
+    p = obligation["payload_row"]
+    target, plan, result = (p[key] for key in ("target_record", "checker_plan", "checker_result"))
+    for record, ref, successor, link in (
+        (target, "target_ref", plan, "goal_ref"),
+        (plan, "checker_plan_ref", result, "plan_ref"),
+        (result, "checker_result_ref", None, None),
+    ):
+        old = record.get("object_id")
+        record["object_id"] = content_id(record)
+        if p.get(ref) == old:
+            p[ref] = record["object_id"]
+        if successor is not None and successor.get(link) == old:
+            successor[link] = record["object_id"]
+    assert all(record["object_id"] == content_id(record) for record in (target, plan, result))
+    return request
 
 
 def fixture():
@@ -35,6 +70,7 @@ def fixture():
     }
     plan = {
         "schema": "ProofCheckPlanV1",
+        "object_type": "ProofCheckPlan",
         "object_id": "sha256:" + "1" * 64,
         "goal_ref": "sha256:" + "2" * 64,
         "expected_theorem": "Fixture.example",
@@ -44,9 +80,14 @@ def fixture():
         "lean_version": "Lean (version 4.29.1)",
         "mathlib_revision": "3" * 40,
         "lake_manifest_sha256": manifest,
+        "dependency_refs": [],
+        "status": "CANDIDATE",
     }
     result = {
         "schema": "CheckerResultV1",
+        "object_type": "CheckerResult",
+        "checker": "lean4",
+        "failure_class": None,
         "object_id": "sha256:" + "4" * 64,
         "plan_ref": plan["object_id"],
         "status": "CHECKED",
@@ -61,6 +102,8 @@ def fixture():
         "lean_version": plan["lean_version"],
         "mathlib_revision": plan["mathlib_revision"],
         "lake_manifest_sha256": manifest,
+        "stdout_sha256": hashlib.sha256(b"").hexdigest(),
+        "stderr_sha256": hashlib.sha256(b"").hexdigest(),
     }
     payload = {
         "target_ref": plan["goal_ref"],
@@ -74,18 +117,34 @@ def fixture():
             "object_id": plan["goal_ref"],
             "object_type": "FormalLemma",
             "status": "UNPROVEN",
+            "statement_canonical": "Fixture theorem (synthetic checker receipt)",
+            "formal_language": "lean4",
+            "dependencies": [],
+            "domain_constraints": [],
+            "provenance": {},
+            "created_by": {},
+            "evidence_refs": [],
             "metadata": {
+                "logical_id": "fixture:theorem",
                 "target_occurrence_ref": address["target_occurrence_ref"],
                 "subject_snapshot_ref": address["subject_snapshot_ref"],
                 "program_graph_address": copy.deepcopy(address),
                 "expected_theorem": plan["expected_theorem"],
                 "target_source_sha256": source,
+                "checker_context": {
+                    "module_path": plan["lean_module"],
+                    "module_source_sha256": source,
+                    "dependency_source_digests": {},
+                    "lean_version": plan["lean_version"],
+                    "mathlib_revision": plan["mathlib_revision"],
+                    "lake_manifest_sha256": manifest,
+                },
             },
         },
         "checker_plan": plan,
         "checker_result": result,
     }
-    return {
+    return reseal({
         "schema": "LSIPTheoremMathSearchResultV1",
         "candidate": {"carrier_ref": "fixture:candidate"},
         "formal_obligation": {
@@ -93,10 +152,11 @@ def fixture():
             "operation_id": "judge_lean_checker_receipt",
             "payload_row": payload,
         },
-    }
+    })
 
 
 def run_case(name, request, expected, directory):
+    request = reseal(request)
     source = directory / "request.json"
     output = directory / "result.json"
     source.write_text(json.dumps(request), encoding="utf-8")
@@ -122,7 +182,63 @@ def cases():
     payload = row["formal_obligation"]["payload_row"]
     for key in ("checker_plan", "checker_result"):
         payload[key]["dependency_source_digests"] = {"Dependency.lean": "c" * 64}
+    payload["target_record"]["metadata"]["checker_context"]["dependency_source_digests"] = {"Dependency.lean": "c" * 64}
     yield "complete-pins-nonempty-local-dependencies", row, "CHECKED"
+
+    row = fixture()
+    p = row["formal_obligation"]["payload_row"]
+    dependencies = {"A.lean": "c" * 64, "B.lean": "d" * 64}
+    p["checker_plan"]["dependency_source_digests"] = dependencies
+    p["checker_result"]["dependency_source_digests"] = dict(reversed(list(dependencies.items())))
+    context = p["target_record"]["metadata"]["checker_context"]
+    context["dependency_source_digests"] = copy.deepcopy(dependencies)
+    p["target_record"]["metadata"]["checker_context"] = dict(reversed(list(context.items())))
+    yield "context-and-dependency-json-order-independent", row, "CHECKED"
+
+    row = fixture()
+    row["formal_obligation"]["payload_row"]["target_record"]["metadata"]["optional_note"] = "extra metadata is allowed"
+    yield "optional-unrelated-metadata-preserved", row, "CHECKED"
+
+    for variant in ("missing", "null", "empty-object", "empty-array", "false"):
+        row = fixture()
+        metadata = row["formal_obligation"]["payload_row"]["target_record"]["metadata"]
+        if variant == "missing":
+            metadata.pop("checker_context")
+        else:
+            metadata["checker_context"] = {"null": None, "empty-object": {}, "empty-array": [], "false": False}[variant]
+        yield f"target-context-{variant}", row, "REJECTED"
+    context_fields = fixture()["formal_obligation"]["payload_row"]["target_record"]["metadata"]["checker_context"]
+    for field in context_fields:
+        for variant in ("missing", "null", "mismatch"):
+            row = fixture()
+            context = row["formal_obligation"]["payload_row"]["target_record"]["metadata"]["checker_context"]
+            if variant == "missing":
+                context.pop(field)
+            elif variant == "null":
+                context[field] = None
+            else:
+                context[field] = {"Other.lean": "e" * 64} if field == "dependency_source_digests" else "e" * 64
+            yield f"target-context-{field}-{variant}", row, "REJECTED"
+    row = fixture()
+    row["formal_obligation"]["payload_row"]["target_record"]["metadata"]["checker_context"]["unowned_field"] = "extra"
+    yield "target-context-extra-field", row, "REJECTED"
+    for owner, field in (("checker_plan", "object_type"), ("checker_result", "object_type"), ("checker_result", "checker")):
+        for variant in ("missing", "null", "wrong"):
+            row = fixture()
+            record = row["formal_obligation"]["payload_row"][owner]
+            if variant == "missing":
+                record.pop(field)
+            else:
+                record[field] = None if variant == "null" else "different"
+            yield f"schema-{owner}-{field}-{variant}", row, "REJECTED"
+    for variant in ("missing", "false", "failure", "empty-string"):
+        row = fixture()
+        result = row["formal_obligation"]["payload_row"]["checker_result"]
+        if variant == "missing":
+            result.pop("failure_class")
+        else:
+            result["failure_class"] = {"false": False, "failure": "lean_rejected", "empty-string": ""}[variant]
+        yield f"successful-checker-failure-class-{variant}", row, "REJECTED"
 
     groups = [
         [("metadata", "expected_theorem"), ("checker_plan", "expected_theorem"),
@@ -254,6 +370,72 @@ def check_parser_and_smt_wire(directory):
     print(process.stdout.strip())
 
 
+def check_original_research_producer(source_root, directory):
+    """Run original model/store/request code with a MOCKED checker outcome.
+
+    The input is research/autoproof/src/autoproof at the pinned PR12 commit.
+    No Lean process is invoked, and no theorem is promoted.
+    """
+    root = Path(source_root)
+    expected = {
+        "canonical.py": "b2f9bd8311b9bd219d8f89c697654c56634cca98",
+        "models.py": "22eb19b467daf05e41aa1077b1a47029a0436b77",
+        "store.py": "319d566af4dd65f1c116445e18e64388da411ce2",
+        "checker.py": "7d233cd3acd3b634f503b71f9efd1b559d91dbbb",
+        "promote.py": "a08cff4cf56e66ab6137fe09fcdb4a808a44e8bc",
+    }
+    for filename, blob in expected.items():
+        data = (root / filename).read_bytes()
+        actual = hashlib.sha1(b"blob " + str(len(data)).encode() + b"\0" + data).hexdigest()
+        assert actual == blob, (filename, actual, blob)
+    name = "_lab_original_research_fixture"
+    package = types.ModuleType(name)
+    package.__path__ = [str(root)]
+    sys.modules[name] = package
+    models = importlib.import_module(name + ".models")
+    store_type = importlib.import_module(name + ".store").ObjectStore
+    checker_type = importlib.import_module(name + ".checker").LeanChecker
+    promote = importlib.import_module(name + ".promote")
+    store = store_type(directory / "research-store")
+    seed = fixture()["formal_obligation"]["payload_row"]
+    metadata = copy.deepcopy(seed["target_record"]["metadata"])
+    source = b"namespace Fixture\ntheorem example : True := by trivial\nend Fixture\n"
+    digest = hashlib.sha256(source).hexdigest()
+    metadata["target_source_sha256"] = digest
+    metadata["checker_context"]["module_source_sha256"] = digest
+    theorem = models.proof_object("FormalLemma", "Fixture.example", formal_language="lean4",
+                                  status="UNPROVEN", metadata=metadata)
+    theorem_ref = store.put(theorem)
+    plan = models.proof_check_plan(theorem_ref, "Fixture.lean", "Fixture.example",
+                                   checker_context=metadata["checker_context"])
+    plan_ref = store.put(plan)
+    # Calling the original formatter does not execute its checker. This is an
+    # explicitly synthetic successful process outcome for protocol testing.
+    result = checker_type(directory)._result(plan, "CHECKED", True, None, 0, "", "",
+                                             source, metadata["checker_context"])
+    result_ref = store.put(result)
+    request = promote.lab_judgment_request(store, theorem_ref, result_ref)
+    assert store.verify() == 3
+    for record in (theorem, plan, result):
+        assert content_id(record) == record["object_id"]
+    run_case("original-research-model-store-request-mocked-checker", request, "CHECKED", directory)
+    mismatch = copy.deepcopy(request)
+    target = mismatch["formal_obligation"]["payload_row"]["target_record"]
+    target["metadata"]["checker_context"]["module_source_sha256"] = "f" * 64
+    mismatch = reseal(mismatch)
+    changed = mismatch["formal_obligation"]["payload_row"]
+    for key in ("target_record", "checker_plan", "checker_result"):
+        store.put(changed[key])
+    try:
+        promote.lab_judgment_request(store, changed["target_ref"], changed["checker_result_ref"])
+    except ValueError as error:
+        assert "pinned source context" in str(error), error
+    else:
+        raise AssertionError("original Research contract accepted changed target context")
+    run_case("original-research-and-lab-rehashed-context-rejection", mismatch, "REJECTED", directory)
+    print("OriginalResearchProducerCorrespondenceGreen: 5 source blobs verified, 2 boundary cases; MOCKED checker, no Lean execution")
+
+
 def main():
     with tempfile.TemporaryDirectory(prefix="lab-receipt-pins-") as temp:
         count = 0
@@ -261,6 +443,11 @@ def main():
             run_case(name, request, expected, Path(temp))
             count += 1
         check_parser_and_smt_wire(Path(temp))
+        research_root = os.environ.get("AUTOPROOF_RESEARCH_ROOT")
+        if research_root:
+            check_original_research_producer(research_root, Path(temp))
+        else:
+            print("Original Research producer integration not run; set AUTOPROOF_RESEARCH_ROOT to the pinned source package")
     print(f"AutoProofReceiptPinsV1Green: {count} checks; synthetic receipt binding only")
 
 

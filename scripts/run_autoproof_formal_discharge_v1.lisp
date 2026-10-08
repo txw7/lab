@@ -209,6 +209,42 @@
                         (cdr entry)))
       (error "~A is missing valid dependency_source_digests" label))))
 
+(defun %dependency-digests-equal-p (left right)
+  ;; The original Research producer compares JSON maps, independently of
+  ;; member order. Shapes and digest values are validated before this call.
+  (and (= (length left) (length right))
+       (= (length left) (length (remove-duplicates left :key #'car :test #'equal)))
+       (= (length right) (length (remove-duplicates right :key #'car :test #'equal)))
+       (every (lambda (entry)
+                (let ((other (assoc (car entry) right :test #'equal)))
+                  (and other (equal (cdr entry) (cdr other)))))
+              left)))
+
+(defun %require-target-checker-context (metadata plan)
+  ;; Mirrors the exact context contract in the original Research owner's
+  ;; promote.py::_verify_target_context; no new theorem authority is created.
+  (let* ((context (%json-get metadata "checker_context"))
+         (fields '("module_path" "module_source_sha256" "dependency_source_digests"
+                   "lean_version" "mathlib_revision" "lake_manifest_sha256")))
+    (unless (and (listp context)
+                 (= (length fields) (length context))
+                 (every (lambda (field)
+                          (= 1 (count field context :key #'car :test #'equal)))
+                        fields))
+      (error "theorem checker_context must contain its exact pinned source context"))
+    (%require-dependency-digests context "theorem checker_context")
+    (unless (and
+             (equal (%json-get context "module_path") (%json-get plan "lean_module"))
+             (equal (%json-get context "module_source_sha256")
+                    (%json-get plan "target_source_sha256"))
+             (%dependency-digests-equal-p
+              (%json-get context "dependency_source_digests")
+              (%json-get plan "dependency_source_digests"))
+             (every (lambda (field)
+                      (equal (%json-get context field) (%json-get plan field)))
+                    '("lean_version" "mathlib_revision" "lake_manifest_sha256")))
+      (error "checker plan differs from the theorem's pinned source context"))))
+
 (defun %lean-receipt-judgment (payload)
   (let* ((target-ref (%json-get payload "target_ref"))
          (occurrence-ref (%json-get payload "target_occurrence_ref"))
@@ -248,6 +284,7 @@
      :digestp t)
     (%require-dependency-digests plan "checker plan")
     (%require-dependency-digests result "checker result")
+    (%require-target-checker-context metadata plan)
     (unless (and target-ref occurrence-ref snapshot-ref plan-ref result-ref
                  (equal "ProgramGraphAddressBindingV1"
                         (%json-get program-graph-address "schema"))
@@ -278,6 +315,7 @@
       (error "target identity is incomplete or differs from the addressed theorem"))
     (unless (and
              (equal "ProofCheckPlanV1" (%json-get plan "schema"))
+             (equal "ProofCheckPlan" (%json-get plan "object_type"))
              (equal target-ref (%json-get plan "goal_ref"))
              (equal (%json-get metadata "expected_theorem")
                     (%json-get plan "expected_theorem"))
@@ -286,6 +324,9 @@
       (error "checker plan does not identify the exact theorem target"))
     (unless (and
              (equal "CheckerResultV1" (%json-get result "schema"))
+             (equal "CheckerResult" (%json-get result "object_type"))
+             (equal "lean4" (%json-get result "checker"))
+             (eq :null (%json-get result "failure_class"))
              (equal result-ref (%json-get result "object_id"))
              (equal "CHECKED" (%json-get result "status"))
              (eq t (%json-get result "trusted"))
@@ -300,8 +341,9 @@
                     (%json-get result "source_sha256"))
              (equal (%json-get plan "target_source_sha256")
                     (%json-get result "module_source_sha256"))
-             (equal (%json-get plan "dependency_source_digests")
-                    (%json-get result "dependency_source_digests"))
+             (%dependency-digests-equal-p
+              (%json-get plan "dependency_source_digests")
+              (%json-get result "dependency_source_digests"))
              (equal (%json-get plan "lean_version")
                     (%json-get result "lean_version"))
              (equal (%json-get plan "mathlib_revision")
