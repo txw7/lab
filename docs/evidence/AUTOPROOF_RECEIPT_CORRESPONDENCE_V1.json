@@ -1,0 +1,125 @@
+{
+  "schema": "AutoProofReceiptCorrespondenceV1",
+  "repository": "txw7/lab",
+  "review_pr": 4,
+  "review_branch": "codex/autoproof-addressed-checker-binding",
+  "baseline_commit": "850a0d564199b3acb36221b0cb21332b15466784",
+  "code_checkpoint": "9049696ea7f9787be3f3f1faa518ee34125cc13b",
+  "work_order": {
+    "repository": "txw7/orchestration",
+    "commit": "71416c751aac38da5efab3dde7cb7434482ebb93",
+    "path": "work/alignment/WORK_ORDER_GENERATIVE_GROWTH_V1.md",
+    "blob": "032075b57b76d8dbf1b70967f33bb1521cd0cefc",
+    "tranche": "GG06 bounded original Lab correspondence"
+  },
+  "source_contract": {
+    "repository": "txw7/research",
+    "commit": "e154f65e1976754718e4b3ef0726c388e67c7d97",
+    "source_package": "autoproof/src/autoproof",
+    "files": {
+      "checker.py": {
+        "git_blob": "7d233cd3acd3b634f503b71f9efd1b559d91dbbb",
+        "sha256": "515be6df4376115cec560e11c7017239a70eaede40703348ca45a893f904dfad"
+      },
+      "canonical.py": {
+        "git_blob": "b2f9bd8311b9bd219d8f89c697654c56634cca98",
+        "sha256": "729ed874c1cc32c1acbeabc6b4fbd3b5a27b7db7bce7c12131e120384432bb35"
+      },
+      "store.py": {
+        "git_blob": "319d566af4dd65f1c116445e18e64388da411ce2",
+        "sha256": "590753b5ad669a0089fe09eb6039e5ce6e95daa8038462da1b5d9f480fe55ae6"
+      },
+      "promote.py": {
+        "git_blob": "a08cff4cf56e66ab6137fe09fcdb4a808a44e8bc",
+        "sha256": "072876d73ac030116fcd37d6e82ade0d694e23c53b66df89fb60f75c37b29270"
+      },
+      "models.py": {
+        "git_blob": "22eb19b467daf05e41aa1077b1a47029a0436b77",
+        "sha256": "ceab0a9fa432ef72673a348c8e72a1e9c3ae76e2a77e8d815f3a65f67dee2ac9"
+      }
+    },
+    "schema_pins": {
+      "autoproof/schemas/checker_result_v1.json": "760be2b21422a5ed0d0c7fed70a3e1bccfc733f9",
+      "autoproof/schemas/proof_check_plan_v1.json": "96f5ecc1dbb1cec0e5b2fd50133535b25c7c88c7"
+    }
+  },
+  "baseline_reproductions": [
+    {
+      "case": "target-context-missing",
+      "baseline_status": "CHECKED",
+      "expected_after": "REJECTED",
+      "recomputed_record_hashes": true,
+      "theorem_status_effect": "NONE"
+    },
+    {
+      "case": "target-context-module_source_sha256-mismatch",
+      "baseline_status": "CHECKED",
+      "expected_after": "REJECTED",
+      "recomputed_record_hashes": true,
+      "theorem_status_effect": "NONE"
+    },
+    {
+      "case": "schema-checker_plan-object_type-wrong",
+      "baseline_status": "CHECKED",
+      "expected_after": "REJECTED",
+      "recomputed_record_hashes": true,
+      "theorem_status_effect": "NONE"
+    },
+    {
+      "case": "schema-checker_result-object_type-wrong",
+      "baseline_status": "CHECKED",
+      "expected_after": "REJECTED",
+      "recomputed_record_hashes": true,
+      "theorem_status_effect": "NONE"
+    },
+    {
+      "case": "schema-checker_result-checker-wrong",
+      "baseline_status": "CHECKED",
+      "expected_after": "REJECTED",
+      "recomputed_record_hashes": true,
+      "theorem_status_effect": "NONE"
+    },
+    {
+      "case": "successful-checker-failure-class-failure",
+      "baseline_status": "CHECKED",
+      "expected_after": "REJECTED",
+      "recomputed_record_hashes": true,
+      "theorem_status_effect": "NONE"
+    }
+  ],
+  "tested_files": {
+    "scripts/run_autoproof_formal_discharge_v1.lisp": "f39cdad6b7db4b4f39d05bcd5b77f7894aa1640c3f083f8a440068a8822856d3",
+    "scripts/check-autoproof-receipt-pins-v1.py": "5672e501f3159852984ae1e199b88a8f883ce964fad3a0c299dd7b9caea0785a"
+  },
+  "toolchain": {
+    "python": "3.12.14",
+    "sbcl": "2.2.9.debian",
+    "sbcl_binary_sha256": "1daa808afcffe730bb38d24462f0ba1a7825a8b63af70afe966481f98705f18a",
+    "sbcl_core_sha256": "3170a8186ed82e32c477589853ed6e234318e3eb2f2e288640e24cd79679f6aa"
+  },
+  "checks": {
+    "result": "PASS",
+    "receipt_cases": 133,
+    "parser_and_smt_wire_assertions": 18,
+    "original_producer_boundary_cases": 2,
+    "original_producer_source_blobs_verified": 5,
+    "python_byte_compile": "PASS",
+    "all_embedded_fixture_ids_recomputed": true,
+    "original_research_store_validated_correspondence_objects": true,
+    "log_sha256": "0401487c798ee3146191275071b7b96e9fc407cce7ab250844c88ffeb6944604"
+  },
+  "assurance": {
+    "checker_execution": "MOCKED success passed to original LeanChecker._result formatter; no Lean process invoked",
+    "theorem_status_effect": "NONE",
+    "theorem_promotion_invoked": false,
+    "content_hash_authentication_claimed": false,
+    "scope": "target context correspondence and original checker record constants only"
+  },
+  "residuals": [
+    "Original FORMAL full load still requires unlocated /home/user0/MIR/pure_asm_and_or_write/xlisp0-orbit-stage1-hll-concept.lisp source and pin.",
+    "No full Lab FORMAL aggregate or unchanged Goggles live gate passed.",
+    "No actual Lean check performed.",
+    "Research retains content-addressed validation and theorem promotion.",
+    "GG06/P01 and global P00 remain open."
+  ]
+}

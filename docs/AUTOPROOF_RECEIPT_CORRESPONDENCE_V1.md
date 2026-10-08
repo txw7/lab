@@ -1,12 +1,23 @@
 # AutoProof receipt correspondence V1
 
-## Checkpoint scope
+## Verified scope
 
 This bounded follow-on to Lab PR4 commit
 `850a0d564199b3acb36221b0cb21332b15466784` aligns the original Lab receipt judge
-with the original Research producer's target-context contract. The full new
-gate and exact-source producer experiment are being recorded separately; this
-checkpoint alone is not a completed proof or integration receipt.
+with the original Research producer's target-context contract. The runner and
+test work were checkpointed as `9049696ea7f9787be3f3f1faa518ee34125cc13b`.
+The final tested source passes 133 receipt cases, 18 parser/SMT-wire assertions,
+and two original-producer correspondence boundary cases. Python compilation
+also passes. All three embedded record hashes are recomputed after mutations;
+the original Research object store independently verifies them in the producer
+exercise. This is protocol/correspondence coverage, not a Lean proof receipt.
+
+Six baseline mutations were separately reproduced against exact predecessor
+`850a0d564199b3acb36221b0cb21332b15466784`: missing context, wrong context source
+digest, wrong plan/result object types, wrong checker identity, and explicit
+failure class were all admitted as CHECKED despite recomputed record hashes.
+The new gate rejects each one. Exact source hashes, case counts and limits are
+recorded in `docs/evidence/AUTOPROOF_RECEIPT_CORRESPONDENCE_V1.json`.
 
 The source authority is `txw7/research` PR12 commit
 `e154f65e1976754718e4b3ef0726c388e67c7d97`, which contains merged PR70:
