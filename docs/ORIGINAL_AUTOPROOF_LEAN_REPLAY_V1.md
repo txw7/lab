@@ -1,11 +1,29 @@
 # Original AutoProof Lean replay V1
 
-## Work checkpoint
+## Blocked execution checkpoint
 
 This checkpoint preserves a replay driver for the original Research theorem
-`RHMachine.mobiusS_mobiusZ` in `RHMachine/Mobius.lean`. Actual checker acceptance
-is not claimed by this checkpoint; the pinned dependency setup and execution
-receipt are separate follow-on evidence.
+`RHMachine.mobiusS_mobiusZ` in `RHMachine/Mobius.lean`. Driver checkpoint
+`e485633b7559a5d62f30f0ece28cea04ca394385` is published and byte-verified.
+Python syntax compilation passes. The theorem checker, Lab judgment and stale
+source negative were NOT RUN because original dependency resolution was
+cancelled before readiness. Earlier synthetic receipt tests are not evidence
+that this theorem ran.
+
+The official Lean archive checksum was verified, and its actual executables
+reported Lean 4.34.0 / Lake 5.0.0-src+293d5d0. The original Mathlib checkout
+resolved to the required commit. Resolution then failed while cloning original
+transitive dependency `leanprover-community/batteries` at
+`f2effa3d803fda822b1f97b806c47cf2adfbcbc2`, with `Proxy CONNECT aborted`.
+Polling the operation returned `automatic approval review was cancelled`.
+No retry executed and no alternate download route was used. The project's
+`lake-manifest.json` was not created; batteries and Cli were still absent.
+The retained outer operation has no captured successful exit status.
+
+This boundary is distinct from the missing original MIR Stage1 source. Neither
+was replaced or bypassed. Exact source, toolchain, package-state and blocked
+execution evidence is retained in
+`docs/evidence/ORIGINAL_AUTOPROOF_LEAN_REPLAY_V1.json`.
 
 Original source owner: `txw7/research` PR12 at
 `e154f65e1976754718e4b3ef0726c388e67c7d97`. The theorem file has Git blob
