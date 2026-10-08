@@ -1,0 +1,62 @@
+{
+  "schema": "AutoProofReceiptPinIntegrityV1",
+  "repository": "txw7/lab",
+  "review_pr": 4,
+  "review_branch": "codex/autoproof-addressed-checker-binding",
+  "parent_commit": "3cdf93550ab81b8b120965287a0da4f18c71ea4d",
+  "work_order": {
+    "repository": "txw7/orchestration",
+    "commit": "74afe01824c14824ccc30ac096e3e2ea131a66b2",
+    "path": "work/alignment/WORK_ORDER_GENERATIVE_GROWTH_V1.md",
+    "tranche": "GG06 bounded original Lab receipt binding repair"
+  },
+  "baseline": {
+    "source_blob": "c92630277c45f746531899b4127bcd4c1f846e3b",
+    "reproduced": "all theorem/source/toolchain pin values absent on both sides accepted as CHECKED",
+    "theorem_status_effect": "NONE",
+    "fixture_only": true
+  },
+  "tested_files": {
+    "formal/json-lite.lisp": "fdcd09de0e011eb65949cf2713617146ff69b10fe009e347c589a6f137b91dcb",
+    "scripts/run_autoproof_formal_discharge_v1.lisp": "521af8f57504be1db37197c69e1a33e5b2ed624683cf2e068c9d364a6ea7f551",
+    "scripts/check-autoproof-receipt-pins-v1.py": "b03248a159dfd65086b7040cc4c7d3949feb0d544862c333349fd396bf800306"
+  },
+  "toolchain": {
+    "python": "3.12.14",
+    "sbcl": "2.2.9.debian",
+    "sbcl_binary_sha256": "1daa808afcffe730bb38d24462f0ba1a7825a8b63af70afe966481f98705f18a",
+    "sbcl_core_sha256": "3170a8186ed82e32c477589853ed6e234318e3eb2f2e288640e24cd79679f6aa"
+  },
+  "checks": {
+    "command": "python3 scripts/check-autoproof-receipt-pins-v1.py",
+    "receipt_cases": 94,
+    "parser_and_smt_wire_assertions": 18,
+    "result": "PASS",
+    "byte_compile": "PASS"
+  },
+  "assurance": "Synthetic binding/schema tests, no Lean execution or theorem proof. Every response retains theorem_status_effect NONE. Research owns content-address and checker validation/promotion.",
+  "original_runtime_owner": {
+    "repository": "txw7/lab",
+    "pr1_commit": "abf3fd588d643b89a842fbd16f7d865057ac15c9",
+    "formal_asd_path": "formal/formal.asd",
+    "formal_asd_blob": "0f1bf89830ac056d12eadeae4f949cf8d7ac88d5",
+    "system": "formal",
+    "package": "mini-kernel",
+    "original_source_files_blob_verified": 50,
+    "fresh_load_result": "BLOCKED",
+    "blocker": "/home/user0/MIR/pure_asm_and_or_write/xlisp0-orbit-stage1-hll-concept.lisp unavailable during eager initialize-ingested-algorithm-registry",
+    "replacement_backend_used": false
+  },
+  "not_run": [
+    "full check-autoproof-unified-lab-v1.sh aggregate",
+    "Lean build",
+    "Goggles live FORMAL gate",
+    "full Research/LSIP/Lab integration"
+  ],
+  "does_not_close": [
+    "P00 globally",
+    "G02 globally",
+    "GG06",
+    "P01"
+  ]
+}

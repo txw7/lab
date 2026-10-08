@@ -36,6 +36,9 @@
 
 (defun %wire-decode (value)
   (cond
+    ((or (eq value mini-kernel::*json-empty-array*)
+         (eq value mini-kernel::*json-false*))
+     nil)
     ((eq value :null) nil)
     ((and
       (listp value)
@@ -175,6 +178,37 @@
    (copy-list (getf row :semantic-tags))
    :metadata (copy-tree (getf row :metadata))))
 
+(defun %nonempty-pin-string-p (value)
+  (and (stringp value)
+       (plusp (length (string-trim '(#\Space #\Tab #\Newline #\Return)
+                                  value)))))
+
+(defun %sha256-pin-p (value)
+  (and (stringp value)
+       (= 64 (length value))
+       (every (lambda (char) (find char "0123456789abcdef")) value)))
+
+(defun %require-pin-fields (row label fields &key digestp)
+  (dolist (field fields)
+    (unless (and (listp row)
+                 (funcall (if digestp #'%sha256-pin-p #'%nonempty-pin-string-p)
+                          (%json-get row field)))
+      (error "~A is missing a valid ~A pin" label field))))
+
+(defun %require-dependency-digests (row label)
+  ;; An explicit empty dependency map is valid. A missing field or JSON null
+  ;; is not a declaration that the checked module has no local dependencies.
+  (let ((entry (and (listp row)
+                    (assoc "dependency_source_digests" row :test #'string=))))
+    (unless (and entry
+                 (listp (cdr entry))
+                 (every (lambda (digest)
+                          (and (consp digest)
+                               (%nonempty-pin-string-p (car digest))
+                               (%sha256-pin-p (cdr digest))))
+                        (cdr entry)))
+      (error "~A is missing valid dependency_source_digests" label))))
+
 (defun %lean-receipt-judgment (payload)
   (let* ((target-ref (%json-get payload "target_ref"))
          (occurrence-ref (%json-get payload "target_occurrence_ref"))
@@ -186,6 +220,34 @@
          (plan (%json-get payload "checker_plan"))
          (result (%json-get payload "checker_result"))
          (metadata (%json-get target "metadata")))
+    (%require-pin-fields
+     payload "receipt payload"
+     '("target_ref" "target_occurrence_ref" "subject_snapshot_ref"
+       "checker_plan_ref" "checker_result_ref"))
+    (%require-pin-fields
+     program-graph-address "program graph address"
+     '("authority_ref" "source_revision" "source_graph_root"
+       "h001_graph_object_ref" "h001_bundle_ref" "h002_address_ref"
+       "h002_containment_witness_ref" "mapping_witness_ref"
+       "target_occurrence_ref" "subject_snapshot_ref"))
+    (%require-pin-fields metadata "theorem metadata" '("expected_theorem"))
+    (%require-pin-fields metadata "theorem metadata" '("target_source_sha256")
+                         :digestp t)
+    (%require-pin-fields
+     plan "checker plan"
+     '("expected_theorem" "lean_module" "lean_version" "mathlib_revision"))
+    (%require-pin-fields
+     plan "checker plan" '("target_source_sha256" "lake_manifest_sha256")
+     :digestp t)
+    (%require-pin-fields
+     result "checker result"
+     '("expected_theorem" "module_path" "lean_version" "mathlib_revision"))
+    (%require-pin-fields
+     result "checker result"
+     '("source_sha256" "module_source_sha256" "lake_manifest_sha256")
+     :digestp t)
+    (%require-dependency-digests plan "checker plan")
+    (%require-dependency-digests result "checker result")
     (unless (and target-ref occurrence-ref snapshot-ref plan-ref result-ref
                  (equal "ProgramGraphAddressBindingV1"
                         (%json-get program-graph-address "schema"))
@@ -283,7 +345,11 @@
            (:judge-lean-checker-receipt
             (multiple-value-bind (judgment rejection)
                 (handler-case
-                    (values (%lean-receipt-judgment payload) nil)
+                    ;; Receipt records are ordinary JSON, not the SMT Lisp
+                    ;; wire format. Preserve JSON null so it cannot equal an
+                    ;; explicitly empty dependency map after wire decoding.
+                    (values (%lean-receipt-judgment
+                             (%json-get obligation "payload_row")) nil)
                   (error (condition)
                     (values nil (princ-to-string condition))))
               (list
@@ -370,7 +436,7 @@
      "usage: run_autoproof_formal_discharge_v1.lisp SEARCH-RESULT.json EVIDENCE.json"))
   (destructuring-bind (input-path output-path) args
     (let* ((search-result
-             (mini-kernel::read-json-file input-path))
+             (mini-kernel::read-json-file input-path :preserve-container-types t))
            (result (%result-row search-result)))
       (with-open-file
           (stream output-path

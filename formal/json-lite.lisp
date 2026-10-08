@@ -1,5 +1,12 @@
 (in-package :mini-kernel)
 
+;; Opt-in typed empty carriers for admission readers. Ordinary consumers keep
+;; the historical NIL representation. Uninterned sentinels cannot collide with
+;; any string, number, Boolean, null, object or array parsed from user JSON.
+(defvar *json-preserve-container-types* nil)
+(defvar *json-empty-array* (make-symbol "JSON-EMPTY-ARRAY"))
+(defvar *json-false* (make-symbol "JSON-FALSE"))
+
 (defun json-object-get (object key)
   (cdr (assoc key object :test #'string=)))
 
@@ -74,7 +81,10 @@
         (kernel-error "unterminated JSON array"))
       (when (char= (char text index) #\])
         (incf index)
-        (return (values (nreverse items) index)))
+        (return (values (if (and *json-preserve-container-types* (null items))
+                            *json-empty-array*
+                            (nreverse items))
+                        index)))
       (multiple-value-bind (value next-index)
           (json-parse-value text index)
         (push value items)
@@ -137,14 +147,16 @@
       ((char= char #\t)
        (json-parse-literal text index "true" t))
       ((char= char #\f)
-       (json-parse-literal text index "false" nil))
+       (json-parse-literal text index "false"
+                           (if *json-preserve-container-types* *json-false* nil)))
       ((char= char #\n)
        (json-parse-literal text index "null" :null))
       (t
        (kernel-error "unsupported JSON value at index ~D" index)))))
 
-(defun read-json-file (path)
-  (with-open-file (stream path :direction :input)
+(defun read-json-file (path &key preserve-container-types)
+  (let ((*json-preserve-container-types* preserve-container-types))
+   (with-open-file (stream path :direction :input)
     (let ((text (with-output-to-string (out)
                   (loop for line = (read-line stream nil nil)
                         while line
@@ -155,4 +167,4 @@
         (setf index (json-skip-whitespace text index))
         (unless (= index (length text))
           (kernel-error "trailing JSON data in ~A at index ~D" path index))
-        value))))
+        value)))))
