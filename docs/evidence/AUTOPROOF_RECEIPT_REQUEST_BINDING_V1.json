@@ -1,0 +1,163 @@
+{
+  "schema": "AutoProofReceiptRequestBindingEvidenceV1",
+  "scope": "U1 original Lab receipt/request correlation and portable checker-context wire; not full U1 closure",
+  "base": {
+    "repository": "txw7/lab",
+    "branch": "codex/autoproof-addressed-checker-binding",
+    "head": "4c7334b50d3eecdb033bf72c5e3871c3356cc95d"
+  },
+  "original_sources": [
+    {
+      "path": "scripts/run_autoproof_formal_discharge_v1.lisp",
+      "blob": "a298d08d8890479bf3e9914545e623bc97983e93",
+      "sha256": "f39cdad6b7db4b4f39d05bcd5b77f7894aa1640c3f083f8a440068a8822856d3"
+    },
+    {
+      "path": "scripts/check-autoproof-receipt-pins-v1.py",
+      "blob": "b4715bf645c29ef9c5a83a596acb765e9ca30b0f",
+      "sha256": "5672e501f3159852984ae1e199b88a8f883ce964fad3a0c299dd7b9caea0785a"
+    },
+    {
+      "path": "formal/json-lite.lisp",
+      "blob": "cfef1a1cdf71aea35cdb827c34bb39b64c218e89",
+      "sha256": "fdcd09de0e011eb65949cf2713617146ff69b10fe009e347c589a6f137b91dcb"
+    },
+    {
+      "path": "formal/package.lisp",
+      "blob": "db572d4abb9aedd2d8a0b3addaeb6fedc74e9e7a",
+      "sha256": "b3630d8e0944cda14e66d8a7f5309a19b726134b40c34a14943963f770fa3f80"
+    },
+    {
+      "path": "formal/formal.asd",
+      "blob": "0f1bf89830ac056d12eadeae4f949cf8d7ac88d5",
+      "sha256": "e5b0e06226c55e34460d291f16b90b968696c464ce597466c5207d9d746f198b"
+    }
+  ],
+  "tested_sources": {
+    "formal/json-lite.lisp": {
+      "bytes": 8655,
+      "sha256": "97b53d852d3a60d4b79666701681ffa745e83339d8eb9a0b399dabe352ee4034",
+      "git_blob": "8398ad33197fbf076e3780c2cf8b76c69e07d58a"
+    },
+    "scripts/run_autoproof_formal_discharge_v1.lisp": {
+      "bytes": 23720,
+      "sha256": "9a2cddb2007f8b999d1bd652c3638e69aa9881d341125d8fe5ca037b03349b55",
+      "git_blob": "e1369197bf8b9fe0142074eadecf2050e1554ceb"
+    },
+    "scripts/check-autoproof-receipt-pins-v1.py": {
+      "bytes": 27817,
+      "sha256": "718a669e2ba88523aaef9dc345e319235839d01e5534d26766401928b32a91f5",
+      "git_blob": "c6c1d2ea12c1a04fc3be09da3fc593f70256e2d7"
+    }
+  },
+  "test_environment": {
+    "python": "Python 3.12",
+    "sbcl": "SBCL 2.2.9.debian",
+    "installation_started": false
+  },
+  "commands": [
+    "SBCL=<existing-sbcl> SBCL_HOME=<existing-sbcl-home> AUTOPROOF_RESEARCH_ROOT=<pinned-research-package> AUTOPROOF_PORTABLE_EVIDENCE_DIR=<output> python3 scripts/check-autoproof-receipt-pins-v1.py",
+    "python3 -m py_compile scripts/check-autoproof-receipt-pins-v1.py",
+    "SBCL_HOME=<existing-sbcl-home> <existing-sbcl> --script scripts/run_autoproof_formal_discharge_v1.lisp <retained-request.json> <retained-result.json>"
+  ],
+  "tests": {
+    "receipt_cases": 165,
+    "raw_wire_cases": 14,
+    "legacy_parser_and_smt_wire_assertions": 18,
+    "original_research_producer_cases": 2,
+    "original_research_source_blobs_verified": 5,
+    "python_compile": "PASS",
+    "outcome": "PASS"
+  },
+  "baseline_bypasses": [
+    {
+      "case": "wrong-envelope-schema",
+      "baseline_status": "CHECKED",
+      "expected_after": "REJECTED",
+      "recomputed_record_hashes": true,
+      "theorem_status_effect": "NONE",
+      "fixed_status": "REJECTED",
+      "fixed_rejection": "unsupported formal-discharge request schema"
+    },
+    {
+      "case": "wrong-envelope-status",
+      "baseline_status": "CHECKED",
+      "expected_after": "REJECTED",
+      "recomputed_record_hashes": true,
+      "theorem_status_effect": "NONE",
+      "fixed_status": "REJECTED",
+      "fixed_rejection": "receipt request differs from the original Research envelope or exact correlation"
+    },
+    {
+      "case": "wrong-obligation-correlation",
+      "baseline_status": "CHECKED",
+      "expected_after": "REJECTED",
+      "recomputed_record_hashes": true,
+      "theorem_status_effect": "NONE",
+      "fixed_status": "REJECTED",
+      "fixed_rejection": "receipt request differs from the original Research envelope or exact correlation"
+    },
+    {
+      "case": "missing-checker-stdout-identity",
+      "baseline_status": "CHECKED",
+      "expected_after": "REJECTED",
+      "recomputed_record_hashes": true,
+      "theorem_status_effect": "NONE",
+      "fixed_status": "REJECTED",
+      "fixed_rejection": "checker result is missing a valid stdout_sha256 pin"
+    },
+    {
+      "case": "malformed-checker-stderr-identity",
+      "baseline_status": "CHECKED",
+      "expected_after": "REJECTED",
+      "recomputed_record_hashes": true,
+      "theorem_status_effect": "NONE",
+      "fixed_status": "REJECTED",
+      "fixed_rejection": "checker result is missing a valid stderr_sha256 pin"
+    }
+  ],
+  "portable_fixture": {
+    "mocked-producer-request.json": {
+      "bytes": 4442,
+      "sha256": "f83dc6ad7499976c207e15100bc720ac06aaa935eb9d6cf3d1e8d9dbdac0c17e",
+      "git_blob": "cc3d95ae344e0d903da069dba2447a6d6687b6ad"
+    },
+    "mocked-producer-result.json": {
+      "bytes": 2135,
+      "sha256": "431c96342782057b4cf08e6721569f660b39fb79d5c8c1df9e6f79ea7a0661a3",
+      "git_blob": "62fd3abb545bd21f349c78913324bdc88bfb1c9a"
+    },
+    "Fixture.lean": {
+      "bytes": 67,
+      "sha256": "a0803c90f068b916b729834c6c3d1e78c390791b04e62c6306a1c78f754eaa6c",
+      "git_blob": "2deb643bad10fd2e028f5cca898ba572f9bc023b"
+    }
+  },
+  "producer": {
+    "repository": "txw7/research",
+    "commit": "e154f65e1976754718e4b3ef0726c388e67c7d97",
+    "checker_result": "MOCKED process outcome through original LeanChecker._result",
+    "request": "original lab_judgment_request",
+    "lab_result": "actual bounded original Lab runner execution",
+    "module_source": "retained Fixture.lean bytes",
+    "library_and_manifest_pins": "synthetic; complete checker closure NOT established"
+  },
+  "limits": {
+    "max_input_bytes": 1048576,
+    "max_nesting": 64,
+    "max_container_items": 4096,
+    "receipt_candidate": "explicit null",
+    "receipt_obligations": 1
+  },
+  "proof_truth": "UNKNOWN",
+  "theorem_status_effect": "NONE",
+  "original_lean_execution": "NOT_RUN_BLOCKED_CANCELLED_DEPENDENCY_RESOLUTION",
+  "formal_aggregate": "NOT_RUN_BLOCKED_MIR_STAGE1_DEPENDENCY",
+  "open": [
+    "Original Goggles canonical graph proposition reconstruction and full terms comparison",
+    "Complete cross-owner full-subject field map",
+    "Original checker execution, authentication and exact command identity",
+    "Rule semantics, reusable admission, activation and new use"
+  ],
+  "publication": "prepared; no branch update or merge performed by this worker"
+}

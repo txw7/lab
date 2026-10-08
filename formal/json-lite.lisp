@@ -1,5 +1,17 @@
 (in-package :mini-kernel)
 
+;; Opt-in typed empty carriers for admission readers. Ordinary consumers keep
+;; the historical NIL representation. Uninterned sentinels cannot collide with
+;; any string, number, Boolean, null, object or array parsed from user JSON.
+(defvar *json-preserve-container-types* nil)
+;; Strict, bounded data parsing is opt-in; legacy consumers keep their API.
+(defvar *json-strict* nil)
+(defvar *json-depth* 0)
+(defvar *json-max-depth* nil)
+(defvar *json-max-container-items* nil)
+(defvar *json-empty-array* (make-symbol "JSON-EMPTY-ARRAY"))
+(defvar *json-false* (make-symbol "JSON-FALSE"))
+
 (defun json-object-get (object key)
   (cdr (assoc key object :test #'string=)))
 
@@ -44,6 +56,8 @@
                  (kernel-error "unsupported JSON escape: ~C" escape)))
               out)))
           (t
+           (when (and *json-strict* (< (char-code char) 32))
+             (error "unescaped control character in JSON string"))
            (write-char char out)))))))
 
 (defun json-parse-number (text index)
@@ -53,6 +67,10 @@
     (loop while (and (< index (length text))
                      (digit-char-p (char text index)))
           do (incf index))
+    (let ((digits (if (char= (char text start) #\-) (1+ start) start)))
+      (when (and *json-strict* (> (- index digits) 1)
+                 (char= (char text digits) #\0))
+        (error "leading zero in JSON number")))
     (values (parse-integer text :start start :end index) index)))
 
 (defun json-parse-literal (text index literal value)
@@ -67,21 +85,31 @@
   (unless (char= (char text index) #\[)
     (kernel-error "expected JSON array at index ~D" index))
   (incf index)
-  (let ((items '()))
+  (let ((items '()) (count 0))
     (loop
       (setf index (json-skip-whitespace text index))
       (when (>= index (length text))
         (kernel-error "unterminated JSON array"))
       (when (char= (char text index) #\])
         (incf index)
-        (return (values (nreverse items) index)))
+        (return (values (if (and *json-preserve-container-types* (null items))
+                            *json-empty-array*
+                            (nreverse items))
+                        index)))
       (multiple-value-bind (value next-index)
           (json-parse-value text index)
+        (incf count)
+        (when (and *json-max-container-items* (> count *json-max-container-items*))
+          (error "JSON array item limit exceeded"))
         (push value items)
         (setf index (json-skip-whitespace text next-index))
         (cond
           ((char= (char text index) #\,)
-           (incf index))
+           (incf index)
+           (when (and *json-strict*
+                      (< (json-skip-whitespace text index) (length text))
+                      (char= (char text (json-skip-whitespace text index)) #\]))
+             (error "trailing comma in JSON array")))
           ((char= (char text index) #\])
            (incf index)
            (return (values (nreverse items) index)))
@@ -92,7 +120,7 @@
   (unless (char= (char text index) #\{)
     (kernel-error "expected JSON object at index ~D" index))
   (incf index)
-  (let ((pairs '()))
+  (let ((pairs '()) (count 0))
     (loop
       (setf index (json-skip-whitespace text index))
       (when (>= index (length text))
@@ -109,11 +137,20 @@
         (setf index (json-skip-whitespace text index))
         (multiple-value-bind (value value-index)
             (json-parse-value text index)
+          (when (and *json-strict* (assoc key pairs :test #'string=))
+            (error "duplicate JSON object key: ~A" key))
+          (incf count)
+          (when (and *json-max-container-items* (> count *json-max-container-items*))
+            (error "JSON object member limit exceeded"))
           (push (cons key value) pairs)
           (setf index (json-skip-whitespace text value-index))
           (cond
             ((char= (char text index) #\,)
-             (incf index))
+             (incf index)
+             (when (and *json-strict*
+                        (< (json-skip-whitespace text index) (length text))
+                        (char= (char text (json-skip-whitespace text index)) #\}))
+               (error "trailing comma in JSON object")))
             ((char= (char text index) #\})
              (incf index)
              (return (values (nreverse pairs) index)))
@@ -128,23 +165,37 @@
     (cond
       ((char= char #\")
        (json-parse-string text index))
-      ((char= char #\{)
-       (json-parse-object text index))
-      ((char= char #\[)
-       (json-parse-array text index))
+      ((or (char= char #\{) (char= char #\[))
+       (let ((*json-depth* (1+ *json-depth*)))
+         (when (and *json-max-depth* (> *json-depth* *json-max-depth*))
+           (error "JSON nesting limit exceeded"))
+         (if (char= char #\{)
+             (json-parse-object text index)
+             (json-parse-array text index))))
       ((or (char= char #\-) (digit-char-p char))
        (json-parse-number text index))
       ((char= char #\t)
        (json-parse-literal text index "true" t))
       ((char= char #\f)
-       (json-parse-literal text index "false" nil))
+       (json-parse-literal text index "false"
+                           (if *json-preserve-container-types* *json-false* nil)))
       ((char= char #\n)
        (json-parse-literal text index "null" :null))
       (t
        (kernel-error "unsupported JSON value at index ~D" index)))))
 
-(defun read-json-file (path)
-  (with-open-file (stream path :direction :input)
+(defun read-json-file (path &key preserve-container-types strict max-bytes max-depth
+                               max-container-items)
+  (when max-bytes
+    (with-open-file (bytes path :direction :input :element-type '(unsigned-byte 8))
+      (when (> (file-length bytes) max-bytes)
+        (error "JSON byte limit exceeded"))))
+  (let ((*json-preserve-container-types* preserve-container-types)
+        (*json-strict* strict)
+        (*json-depth* 0)
+        (*json-max-depth* max-depth)
+        (*json-max-container-items* max-container-items))
+   (with-open-file (stream path :direction :input)
     (let ((text (with-output-to-string (out)
                   (loop for line = (read-line stream nil nil)
                         while line
@@ -155,4 +206,4 @@
         (setf index (json-skip-whitespace text index))
         (unless (= index (length text))
           (kernel-error "trailing JSON data in ~A at index ~D" path index))
-        value))))
+        value)))))

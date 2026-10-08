@@ -1,0 +1,191 @@
+{
+  "schema": "OriginalAutoProofLeanReadinessV1",
+  "status": "BLOCKED_CANCELLED_DEPENDENCY_RESOLUTION",
+  "repository": "txw7/lab",
+  "review_pr": 4,
+  "review_branch": "codex/autoproof-addressed-checker-binding",
+  "baseline_commit": "5ff6dd2fa44d5f5b7115be9ed02c9241d8971461",
+  "driver_checkpoint": "e485633b7559a5d62f30f0ece28cea04ca394385",
+  "research_commit": "e154f65e1976754718e4b3ef0726c388e67c7d97",
+  "theorem": "RHMachine.mobiusS_mobiusZ",
+  "theorem_module": "RHMachine/Mobius.lean",
+  "mathlib_commit": "5ed2965256430c3649e86755f9576b54eca72435",
+  "work_order": {
+    "repository": "txw7/orchestration",
+    "commit": "50bfccd17e186193c1da8ab9d574be8c6f9f9df5",
+    "path": "work/alignment/WORK_ORDER_GENERATIVE_GROWTH_V1.md",
+    "blob": "032075b57b76d8dbf1b70967f33bb1521cd0cefc",
+    "tranche": "GG06 original proof closure"
+  },
+  "toolchain": {
+    "toolchain": "leanprover/lean4:v4.34.0",
+    "official_release": "https://github.com/leanprover/lean4/releases/tag/v4.34.0",
+    "archive": "lean-4.34.0-linux.tar.zst",
+    "published_size": 580367391,
+    "actual_size": 580367391,
+    "verified_sha256": "caaa98356098c85dc0fcbbd28e1ec66f39eb6551829972b752ff20e1286b646b",
+    "installation": "isolated task-local; no global changes",
+    "lean_version": "Lean (version 4.34.0, x86_64-unknown-linux-gnu, commit 293d5d0c0c3f3dded4688b3ccd6a33939ac5102b, Release)",
+    "lake_version": "Lake version 5.0.0-src+293d5d0 (Lean version 4.34.0)"
+  },
+  "verified_original_source_files": {
+    "canonical.py": {
+      "git_blob": "b2f9bd8311b9bd219d8f89c697654c56634cca98",
+      "sha256": "729ed874c1cc32c1acbeabc6b4fbd3b5a27b7db7bce7c12131e120384432bb35",
+      "bytes": 4049
+    },
+    "models.py": {
+      "git_blob": "22eb19b467daf05e41aa1077b1a47029a0436b77",
+      "sha256": "ceab0a9fa432ef72673a348c8e72a1e9c3ae76e2a77e8d815f3a65f67dee2ac9",
+      "bytes": 10080
+    },
+    "store.py": {
+      "git_blob": "319d566af4dd65f1c116445e18e64388da411ce2",
+      "sha256": "590753b5ad669a0089fe09eb6039e5ce6e95daa8038462da1b5d9f480fe55ae6",
+      "bytes": 4024
+    },
+    "checker.py": {
+      "git_blob": "7d233cd3acd3b634f503b71f9efd1b559d91dbbb",
+      "sha256": "515be6df4376115cec560e11c7017239a70eaede40703348ca45a893f904dfad",
+      "bytes": 10961
+    },
+    "promote.py": {
+      "git_blob": "a08cff4cf56e66ab6137fe09fcdb4a808a44e8bc",
+      "sha256": "072876d73ac030116fcd37d6e82ade0d694e23c53b66df89fb60f75c37b29270",
+      "bytes": 16914
+    },
+    "lean/lean-toolchain": {
+      "git_blob": "12359f928f18e4a89ebd1444a0310b025931b17d",
+      "sha256": "8733782dc070a99b312039cda424f601b80f3be6f6f512627da5ba25adc27632",
+      "bytes": 25
+    },
+    "lean/lakefile.toml": {
+      "git_blob": "0babed56d9c584c0918af77fd70bf8d0da6746be",
+      "sha256": "8d213645f6da362a8ed72db3930fc19e996fb3e1665078c27b7f593abeabfb09",
+      "bytes": 179
+    },
+    "lean/RHMachine/Mobius.lean": {
+      "git_blob": "1cdecc8b5388f00449eeced903a46efbbe9779e2",
+      "sha256": "40b662ba391f13bc773413238cdc84530b22769c825786325752997a67217694",
+      "bytes": 8118
+    },
+    "source/lab/scripts/run_autoproof_formal_discharge_v1.lisp": {
+      "git_blob": "a298d08d8890479bf3e9914545e623bc97983e93",
+      "sha256": "f39cdad6b7db4b4f39d05bcd5b77f7894aa1640c3f083f8a440068a8822856d3",
+      "bytes": 20605
+    },
+    "source/lab/formal/json-lite.lisp": {
+      "git_blob": "cfef1a1cdf71aea35cdb827c34bb39b64c218e89",
+      "sha256": "fdcd09de0e011eb65949cf2713617146ff69b10fe009e347c589a6f137b91dcb",
+      "bytes": 6508
+    },
+    "source/lab/formal/package.lisp": {
+      "git_blob": "db572d4abb9aedd2d8a0b3addaeb6fedc74e9e7a",
+      "sha256": "b3630d8e0944cda14e66d8a7f5309a19b726134b40c34a14943963f770fa3f80",
+      "bytes": 51331
+    },
+    "source/lab/formal/formal.asd": {
+      "git_blob": "0f1bf89830ac056d12eadeae4f949cf8d7ac88d5",
+      "sha256": "e5b0e06226c55e34460d291f16b90b968696c464ce597466c5207d9d746f198b",
+      "bytes": 1154
+    }
+  },
+  "original_source_file_count": 12,
+  "dependency_state": [
+    {
+      "name": "mathlib",
+      "directory_present": true,
+      "git_present": true,
+      "head": "5ed2965256430c3649e86755f9576b54eca72435",
+      "read_exit": 0
+    },
+    {
+      "name": "plausible",
+      "directory_present": true,
+      "git_present": true,
+      "head": "118aa17ee84656b8bd727fef7c458ee8c833385c",
+      "read_exit": 0
+    },
+    {
+      "name": "LeanSearchClient",
+      "directory_present": true,
+      "git_present": true,
+      "head": "ddf04cf3949fa556442341e87d47f9f6e6074707",
+      "read_exit": 0
+    },
+    {
+      "name": "importGraph",
+      "directory_present": true,
+      "git_present": true,
+      "head": "e928b72544873815af278d38681b31c0293588e3",
+      "read_exit": 0
+    },
+    {
+      "name": "proofwidgets",
+      "directory_present": true,
+      "git_present": true,
+      "head": "106ff4fafc74ef4ac99d81dbf3ab399118f497a5",
+      "read_exit": 0
+    },
+    {
+      "name": "aesop",
+      "directory_present": true,
+      "git_present": true,
+      "head": "355695d523e41d0554926416cba2a2b3544fbbc9",
+      "read_exit": 0
+    },
+    {
+      "name": "Qq",
+      "directory_present": true,
+      "git_present": true,
+      "head": "6a489d9af5d0c47e5b259e2e8bcdfc1811b5a259",
+      "read_exit": 0
+    },
+    {
+      "name": "batteries",
+      "directory_present": false,
+      "git_present": false
+    },
+    {
+      "name": "Cli",
+      "directory_present": false,
+      "git_present": false
+    }
+  ],
+  "resolution": {
+    "command": "lake update",
+    "automatic_cache_fetch": "deferred with supported MATHLIB_NO_CACHE_ON_UPDATE=1 until commit verification",
+    "blocked_repository": "https://github.com/leanprover-community/batteries",
+    "expected_commit": "f2effa3d803fda822b1f97b806c47cf2adfbcbc2",
+    "git_error": "Proxy CONNECT aborted; external command git exited with code 128",
+    "operation_poll": "automatic approval review was cancelled",
+    "outer_exit_status": null,
+    "retry_executed": false,
+    "project_manifest_created": false,
+    "mathlib_cache_fetch_executed": false
+  },
+  "verification": {
+    "driver_python_compile": "PASS",
+    "driver_source_sha256": "84b8b569f606ae567ac5648329937db822ad8ad73603228022cf8d201eb0f286",
+    "actual_lean_theorem_check": "NOT_RUN",
+    "actual_lab_judgment": "NOT_RUN",
+    "stale_source_negative": "NOT_RUN",
+    "theorem_promotion": "NOT_RUN",
+    "earlier_mocked_receipt_tests": "separate historical evidence, not actual theorem execution"
+  },
+  "boundaries": [
+    "No new Work/Codex session",
+    "No global installation or security changes",
+    "No alternative dependency-download route after cancellation",
+    "No AlgebraicRewriting installation",
+    "No binaries or cache in publication",
+    "No theorem source substitution or edit",
+    "No MIR Stage1 shim or replacement FORMAL backend",
+    "No merge, deployment or live provider activation"
+  ],
+  "residuals": [
+    "Original Lean/Mathlib environment incomplete because dependency resolution was cancelled.",
+    "Original /home/user0/MIR/pure_asm_and_or_write/xlisp0-orbit-stage1-hll-concept.lisp source/pin remains unresolved.",
+    "No actual theorem acceptance or GG06/P01 closure established."
+  ]
+}
