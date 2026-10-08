@@ -37,6 +37,7 @@ def reseal(request):
         return request
     p = obligation["payload_row"]
     target, plan, result = (p[key] for key in ("target_record", "checker_plan", "checker_result"))
+    old_correlation = f"autoproof-lean-receipt:{p['target_ref']}:{p['checker_result_ref']}"
     for record, ref, successor, link in (
         (target, "target_ref", plan, "goal_ref"),
         (plan, "checker_plan_ref", result, "plan_ref"),
@@ -49,6 +50,8 @@ def reseal(request):
         if successor is not None and successor.get(link) == old:
             successor[link] = record["object_id"]
     assert all(record["object_id"] == content_id(record) for record in (target, plan, result))
+    if obligation.get("obligation_id") == old_correlation:
+        obligation["obligation_id"] = f"autoproof-lean-receipt:{p['target_ref']}:{p['checker_result_ref']}"
     return request
 
 
@@ -146,9 +149,10 @@ def fixture():
     }
     return reseal({
         "schema": "LSIPTheoremMathSearchResultV1",
-        "candidate": {"carrier_ref": "fixture:candidate"},
+        "status": "FORMAL_RECEIPT_SUBMITTED",
+        "candidate": None,
         "formal_obligation": {
-            "obligation_id": "fixture:obligation",
+            "obligation_id": f"autoproof-lean-receipt:{payload['target_ref']}:{payload['checker_result_ref']}",
             "operation_id": "judge_lean_checker_receipt",
             "payload_row": payload,
         },
@@ -173,7 +177,14 @@ def run_case(name, request, expected, directory):
         assert row["evidence"]["rejection_reason"], (name, row)
     if expected == "CHECKED":
         assert row["formal_judgment"]["kind"] == "LEAN_CHECKED_THEOREM_V1"
+        p = request["formal_obligation"]["payload_row"]
+        assert row["formal_obligation_id"] == request["formal_obligation"]["obligation_id"]
+        assert row["evidence"]["checker_context"] == p["target_record"]["metadata"]["checker_context"]
+        assert row["evidence"]["expected_theorem"] == p["checker_plan"]["expected_theorem"]
+        for field in ("stdout_sha256", "stderr_sha256"):
+            assert row["evidence"][field] == p["checker_result"][field]
     print("PASS", name)
+    return row
 
 
 def cases():
@@ -319,6 +330,86 @@ def cases():
     yield "unsupported-operation-preserved", row, "CAPABILITY_MISSING"
 
 
+def envelope_cases():
+    for field, wrong in (("schema", "LSIPTheoremMathSearchResultV99"),
+                         ("status", "FAILED"), ("candidate", {"carrier_ref": "other"})):
+        for variant in ("missing", "wrong", "empty", "false"):
+            request = fixture()
+            if variant == "missing":
+                request.pop(field)
+            else:
+                request[field] = {"wrong": wrong, "empty": "", "false": False}[variant]
+            yield f"envelope-{field}-{variant}", request, "REJECTED"
+    for value in (None, "", "different-request", "autoproof-lean-receipt:target:result"):
+        request = fixture()
+        request["formal_obligation"]["obligation_id"] = value
+        yield f"correlation-{value!r}", request, "REJECTED"
+    for spelling in ("JUDGE_LEAN_CHECKER_RECEIPT", "judge-lean-checker-receipt"):
+        request = fixture()
+        request["formal_obligation"]["operation_id"] = spelling
+        yield f"noncanonical-operation-{spelling}", request, "REJECTED"
+    for field in ("stdout_sha256", "stderr_sha256"):
+        for variant in ("missing", "null", "invalid", "empty"):
+            request = fixture()
+            result = request["formal_obligation"]["payload_row"]["checker_result"]
+            if variant == "missing":
+                result.pop(field)
+            else:
+                result[field] = {"null": None, "invalid": "not-a-digest", "empty": ""}[variant]
+            yield f"checker-output-{field}-{variant}", request, "REJECTED"
+    request = fixture()
+    request["formal_obligation"]["payload_row"]["target_record"]["metadata"]["literal_data"] = {
+        "$symbol": "THIS-PACKAGE-DOES-NOT-EXIST:SENTINEL", "$package": "KEYWORD"}
+    yield "receipt-symbol-markers-remain-data", request, "CHECKED"
+    for name, marker in (
+        ("symbol-array", {"$symbol": ["plain", "data"]}),
+        ("symbol-object", {"$symbol": {"nested": "data"}}),
+        ("keyword-object", {"$keyword": {"nested": "data"}}),
+        ("reader-eval-string", '#.(error "must remain a string")'),
+    ):
+        request = fixture()
+        request["formal_obligation"]["payload_row"]["target_record"]["metadata"]["literal_data"] = marker
+        yield f"receipt-{name}-remains-data", request, "CHECKED"
+    request = fixture()
+    request["formal_obligation"]["operation_id"] = "unavailable_operation"
+    request["formal_obligation"]["payload_row"]["$symbol"] = {"not": "a symbol"}
+    yield "unknown-operation-does-not-decode-symbol-markers", request, "CAPABILITY_MISSING"
+
+
+def check_raw_envelopes(directory):
+    text = json.dumps(fixture())
+    requests = {
+        "duplicate-root-schema": text.replace('"schema":', '"schema":"ForeignV9","schema":', 1),
+        "duplicate-obligation-id": text.replace('"obligation_id":', '"obligation_id":"foreign","obligation_id":', 1),
+        "duplicate-result-status": text.replace('"status": "CHECKED"', '"status":"CHECKED","status":"FAILED"'),
+        "trailing-object-comma": text[:-1] + ',}',
+        "trailing-array-comma": text.replace('"dependencies": []', '"dependencies": ["x",]'),
+        "leading-zero": text.replace('"process_status": 0', '"process_status": 00'),
+        "raw-control-character": text.replace('"FormalLemma"', '"Formal\x01Lemma"'),
+        "nested-over-limit": '{"extra":' + '[' * 65 + '0' + ']' * 65 + '}',
+        "bytes-over-limit": '{"extra":"' + 'x' * 1048576 + '"}',
+        "items-over-limit": '{"extra":[' + ','.join('0' for _ in range(4097)) + ']}',
+        "malformed-root": '[]',
+        "trailing-data": text + ' true',
+        "duplicate-control-key": text[:-1] + ',"x\\b":1,"x\\b":2}',
+        "unknown-schema-without-obligation": '{"schema":"UnknownV9"}',
+    }
+    for name, raw in requests.items():
+        source, output = directory / "raw-request.json", directory / "raw-result.json"
+        source.write_text(raw, encoding="utf-8")
+        process = subprocess.run(
+            [os.environ.get("SBCL", "sbcl"), "--script", str(RUNNER), str(source), str(output)],
+            capture_output=True, text=True, timeout=30)
+        assert process.returncode == 0, (name, process.stderr)
+        result = json.loads(output.read_text())
+        assert result["status"] == "REJECTED", (name, result)
+        assert result["theorem_status_effect"] == "NONE", (name, result)
+        assert result["formal_judgment"] is None, (name, result)
+        assert result["evidence"]["rejection_reason"], (name, result)
+        print("PASS", name)
+    print(f"BoundedReceiptWireGreen: {len(requests)} raw envelope cases")
+
+
 def check_parser_and_smt_wire(directory):
     request_path = directory / "request.json"
     result_path = directory / "result.json"
@@ -419,6 +510,15 @@ def check_original_research_producer(source_root, directory):
     for record in (theorem, plan, result):
         assert content_id(record) == record["object_id"]
     run_case("original-research-model-store-request-mocked-checker", request, "CHECKED", directory)
+    portable = os.environ.get("AUTOPROOF_PORTABLE_EVIDENCE_DIR")
+    if portable:
+        output = Path(portable)
+        output.mkdir(parents=True, exist_ok=True)
+        # These are the exact input and output bytes used by the real Lab
+        # runner, with original Research producers and a MOCKED Lean outcome.
+        (output / "portable-request.json").write_bytes((directory / "request.json").read_bytes())
+        (output / "portable-result.json").write_bytes((directory / "result.json").read_bytes())
+        (output / "Fixture.lean").write_bytes(source)
     mismatch = copy.deepcopy(request)
     target = mismatch["formal_obligation"]["payload_row"]["target_record"]
     target["metadata"]["checker_context"]["module_source_sha256"] = "f" * 64
@@ -439,10 +539,11 @@ def check_original_research_producer(source_root, directory):
 def main():
     with tempfile.TemporaryDirectory(prefix="lab-receipt-pins-") as temp:
         count = 0
-        for name, request, expected in cases():
+        for name, request, expected in (*cases(), *envelope_cases()):
             run_case(name, request, expected, Path(temp))
             count += 1
         check_parser_and_smt_wire(Path(temp))
+        check_raw_envelopes(Path(temp))
         research_root = os.environ.get("AUTOPROOF_RESEARCH_ROOT")
         if research_root:
             check_original_research_producer(research_root, Path(temp))

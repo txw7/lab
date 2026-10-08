@@ -81,13 +81,22 @@
              (#\Newline (write-string "\\n" stream))
              (#\Return (write-string "\\r" stream))
              (#\Tab (write-string "\\t" stream))
-             (otherwise (write-char char stream))))
+             (otherwise
+              (if (< (char-code char) 32)
+                  (format stream "\\u~4,'0X" (char-code char))
+                  (write-char char stream)))))
   (write-char #\" stream))
 
 (defun %json-write (value stream)
   (cond
-    ((eq value :json-null)
+    ((member value '(:json-null :null) :test #'eq)
      (write-string "null" stream))
+    ((eq value :json-empty-object)
+     (write-string "{}" stream))
+    ((eq value mini-kernel::*json-empty-array*)
+     (write-string "[]" stream))
+    ((eq value mini-kernel::*json-false*)
+     (write-string "false" stream))
     ((eq value t)
      (write-string "true" stream))
     ((null value)
@@ -245,6 +254,29 @@
                     '("lean_version" "mathlib_revision" "lake_manifest_sha256")))
       (error "checker plan differs from the theorem's pinned source context"))))
 
+(defun %require-receipt-request (search-result obligation payload)
+  ;; Reconstruct the correlation exactly as Research promote.py does. This is
+  ;; a receipt/request check, not reconstruction of a Lean proposition.
+  (unless (and (equal (%json-get search-result "schema")
+                      "LSIPTheoremMathSearchResultV1")
+               (equal (%json-get search-result "status") "FORMAL_RECEIPT_SUBMITTED")
+               (eq (%json-get search-result "candidate") :null)
+               (equal (%json-get obligation "operation_id") "judge_lean_checker_receipt")
+               (equal (%json-get obligation "obligation_id")
+                      (format nil "autoproof-lean-receipt:~A:~A"
+                              (%json-get payload "target_ref")
+                              (%json-get payload "checker_result_ref"))))
+    (error "receipt request differs from the original Research envelope or exact correlation")))
+
+(defun %checker-context-evidence (payload)
+  ;; Preserve the owner's context, including explicit {} rather than null.
+  (let* ((target (%json-get payload "target_record"))
+         (context (copy-tree (%json-get (%json-get target "metadata") "checker_context")))
+         (dependencies (assoc "dependency_source_digests" context :test #'equal)))
+    (when (null (cdr dependencies))
+      (setf (cdr dependencies) :json-empty-object))
+    context))
+
 (defun %lean-receipt-judgment (payload)
   (let* ((target-ref (%json-get payload "target_ref"))
          (occurrence-ref (%json-get payload "target_occurrence_ref"))
@@ -280,7 +312,8 @@
      '("expected_theorem" "module_path" "lean_version" "mathlib_revision"))
     (%require-pin-fields
      result "checker result"
-     '("source_sha256" "module_source_sha256" "lake_manifest_sha256")
+     '("source_sha256" "module_source_sha256" "lake_manifest_sha256"
+       "stdout_sha256" "stderr_sha256")
      :digestp t)
     (%require-dependency-digests plan "checker plan")
     (%require-dependency-digests result "checker result")
@@ -361,6 +394,8 @@
      (cons "checker_plan_ref" plan-ref))))
 
 (defun %result-row (search-result)
+  (unless (equal (%json-get search-result "schema") "LSIPTheoremMathSearchResultV1")
+    (error "unsupported formal-discharge request schema"))
   (let* ((candidate (%json-get search-result "candidate"))
          (candidate-ref
            (and (listp candidate)
@@ -380,9 +415,7 @@
        (let* ((operation-id
                 (%keyword-from-wire-string
                  (%json-get obligation "operation_id")))
-              (payload
-                (%wire-decode
-                 (%json-get obligation "payload_row"))))
+              (payload (%json-get obligation "payload_row")))
          (case operation-id
            (:judge-lean-checker-receipt
             (multiple-value-bind (judgment rejection)
@@ -390,8 +423,9 @@
                     ;; Receipt records are ordinary JSON, not the SMT Lisp
                     ;; wire format. Preserve JSON null so it cannot equal an
                     ;; explicitly empty dependency map after wire decoding.
-                    (values (%lean-receipt-judgment
-                             (%json-get obligation "payload_row")) nil)
+                    (progn
+                      (%require-receipt-request search-result obligation payload)
+                      (values (%lean-receipt-judgment payload) nil))
                   (error (condition)
                     (values nil (princ-to-string condition))))
               (list
@@ -412,13 +446,20 @@
                           (cons "checker_result_ref"
                                 (%json-get payload "checker_result_ref"))
                           (cons "checker_plan_ref"
-                                (%json-get payload "checker_plan_ref")))
+                                (%json-get payload "checker_plan_ref"))
+                          (cons "checker_context" (%checker-context-evidence payload))
+                          (cons "expected_theorem"
+                                (%json-get (%json-get payload "checker_plan") "expected_theorem"))
+                          (cons "stdout_sha256"
+                                (%json-get (%json-get payload "checker_result") "stdout_sha256"))
+                          (cons "stderr_sha256"
+                                (%json-get (%json-get payload "checker_result") "stderr_sha256")))
                          (list
                           (cons "evidence_kind" "receipt_binding_rejected")
                           (cons "rejection_reason" rejection)))))))
            (:check-smt-spec
             (asdf:load-system "formal")
-            (let* ((spec (%smt-spec-from-row payload))
+            (let* ((spec (%smt-spec-from-row (%wire-decode payload)))
                    (result
                      (mini-kernel:invoke-formal-capability
                       :check-smt-spec
@@ -477,9 +518,22 @@
     (error
      "usage: run_autoproof_formal_discharge_v1.lisp SEARCH-RESULT.json EVIDENCE.json"))
   (destructuring-bind (input-path output-path) args
-    (let* ((search-result
-             (mini-kernel::read-json-file input-path :preserve-container-types t))
-           (result (%result-row search-result)))
+    (let ((result
+            (handler-case
+                (%result-row
+                 (mini-kernel::read-json-file
+                  input-path :preserve-container-types t :strict t
+                  :max-bytes 1048576 :max-depth 64 :max-container-items 4096))
+              (error (condition)
+                (list
+                 (cons "schema" "LabFormalDischargeResultV1")
+                 (cons "candidate_ref" :json-null)
+                 (cons "status" "REJECTED")
+                 (cons "theorem_status_effect" "NONE")
+                 (cons "formal_judgment" :json-null)
+                 (cons "evidence"
+                       (list (cons "evidence_kind" "request_decode_rejected")
+                             (cons "rejection_reason" (princ-to-string condition)))))))))
       (with-open-file
           (stream output-path
                   :direction :output
